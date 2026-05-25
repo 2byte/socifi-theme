@@ -1,0 +1,300 @@
+// =====================================================================
+// COMPONENT STYLES.
+//
+// Two conventions in this file:
+//   1. Only semantic tokens (var(--color-*), var(--radius-*), etc.).
+//      No primitives, no hex literals.
+//   2. Selectors that need to override Quasar's defaults are prefixed
+//      with `body`. Quasar's own CSS is unlayered and cannot be put
+//      into a layer without modifying its build, so we cannot win via
+//      @layer alone — we win via specificity (body + .q-foo = 0,1,1 >
+//      Quasar's 0,1,0). Inside @layer, the body-prefixed rules still
+//      keep their specificity and now beat Quasar without !important.
+//
+// Wrapped in `@layer components` — order is declared in app.scss as
+// `tokens, components, utilities` so that utility classes always win.
+// =====================================================================
+
+@layer components {
+
+  /* === Base ======================================================= */
+  html, body {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: var(--color-surface-base);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    margin: 0;
+  }
+
+  #q-app {
+    background-color: var(--color-surface-base);
+  }
+
+  /* === Layout ===================================================== */
+  body .q-page {
+    background-color: transparent;
+  }
+
+  body .q-layout__container {
+    min-height: 100vh;
+  }
+
+  /* === Header ===================================================== */
+  body .app-header {
+    background-color: var(--color-primary);
+    color: var(--color-text-on-brand);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .app-title {
+    font-weight: 600;
+    color: var(--color-text-on-brand);
+  }
+
+  .header-logo {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .header-actions {
+    gap: 12px;
+  }
+
+  .header-actions .q-btn {
+    color: var(--color-text-on-brand);
+  }
+
+  /* === Drawer ===================================================== */
+  body .app-drawer {
+    background: var(--color-surface-soft);
+    color: var(--color-text-link);
+  }
+
+  .drawer-top {
+    padding: 18px 18px 12px;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .drawer-logo {
+    color: var(--color-text-link);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+  }
+
+  .drawer-caption {
+    color: var(--color-text-link);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .drawer-nav-item {
+    margin-bottom: 6px;
+  }
+
+  .drawer-nav-item--active {
+    background: var(--color-surface-soft-strong);
+  }
+
+  .drawer-footer {
+    padding: 18px;
+  }
+
+  .drawer-help {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--color-text-link);
+  }
+
+  .drawer-header {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  /* === Cards ====================================================== */
+  body .q-card,
+  body .note-card,
+  body .auth-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Custom class added by templates, not a real Quasar class */
+  body .q-card-header {
+    background: var(--color-primary);
+    color: var(--color-text-on-brand);
+  }
+
+  body .q-card__section {
+    background: var(--color-surface-soft);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  body .q-card__actions {
+    background: var(--color-surface-soft-strong);
+    border-bottom: 1px solid var(--color-border-strong);
+    padding-top: 1.2em;
+    padding-bottom: 1.2em;
+  }
+
+  /* === Auth page ================================================== */
+  .auth-page {
+    background-color: var(--color-primary-soft);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 24px;
+  }
+
+  .auth-title,
+  .text-h4 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  /* === Buttons ==================================================== */
+  .q-btn,
+  .q-btn--action {
+    font-family: var(--font-family-base);
+    box-shadow: var(--shadow-card-soft);
+  }
+
+  body .q-btn[color="primary"] {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  body .q-btn[color="primary"]:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  .q-btn.flat {
+    color: var(--color-primary);
+  }
+
+  /* === Inputs (q-field) =========================================== */
+  body .q-field {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-strong);
+  }
+
+  body .q-field--filled .q-field__control {
+    background: var(--color-primary-soft);
+  }
+
+  body .q-field--filled .q-field__control:before {
+    background: var(--color-primary-soft);
+    border-bottom: 1px solid var(--color-border-strong);
+  }
+
+  body .q-field--outlined .q-field__native,
+  body .q-input__control {
+    color: var(--color-text);
+  }
+
+  .q-field__label {
+    color: var(--color-text-muted);
+  }
+
+  /* === Notes list ================================================= */
+  .notes-header {
+    margin-bottom: 16px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .stats-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 18px;
+    box-shadow: var(--shadow-card-soft);
+    backdrop-filter: blur(10px);
+  }
+
+  .stats-card-title {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .stats-card-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .note-card {
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+
+  .note-title {
+    margin-bottom: 8px;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+  }
+
+  .note-content {
+    color: var(--color-text-muted);
+    margin-bottom: 14px;
+  }
+
+  .note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  .sync-status {
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .sync-status--synced {
+    background-color: var(--color-success-bg);
+    color: var(--color-success-fg);
+  }
+
+  .sync-status--pending {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning-fg);
+  }
+
+  /* === Dialog ===================================================== */
+  .q-dialog__inner > .q-card {
+    min-width: 320px;
+  }
+
+  .q-card-section {
+    padding: 18px;
+  }
+
+  .q-card-actions {
+    padding: 16px 18px;
+  }
+}

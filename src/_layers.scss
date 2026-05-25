@@ -1,0 +1,12 @@
+// =====================================================================
+// LAYER ORDER DECLARATION.
+//
+// Must compile to CSS BEFORE any `@layer foo { ... }` block, otherwise
+// the layer order is fixed by first-appearance in source order. Loaded
+// from index.scss between the token partials and the rule partials.
+//
+// Later names win. To insert a new layer between existing ones, edit
+// here and the order is applied globally.
+// =====================================================================
+
+@layer components, utilities;

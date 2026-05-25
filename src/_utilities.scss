@@ -1,0 +1,23 @@
+// =====================================================================
+// UTILITIES — one-purpose helper classes that should win over component
+// styles when both apply. Wrapped in `@layer utilities` (declared last
+// in app.scss, so it beats `@layer components`).
+//
+// Convention: utilities should not reach for primitives directly — they
+// reference semantic tokens too, so a rebrand cascades through.
+// =====================================================================
+
+@layer utilities {
+
+  /* Text colour helpers (replace the old `text-light-primary`, `text-default` with !important) */
+  .text-on-brand   { color: var(--color-text-on-brand); }
+  .text-muted      { color: var(--color-text-muted); }
+  .text-primary    { color: var(--color-primary); }
+
+  /* Background helpers */
+  .bg-primary-soft { background-color: var(--color-primary-soft); }
+  .bg-surface      { background-color: var(--color-surface); }
+
+  /* Sizing */
+  .full-width      { width: 100%; }
+}

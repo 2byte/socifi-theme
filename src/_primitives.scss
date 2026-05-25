@@ -1,0 +1,41 @@
+// =====================================================================
+// PRIMITIVES — palette exposed as CSS custom properties.
+//
+// Same values as _palette.scss, but available at runtime. JS, devtools,
+// and other apps that consume this theme can read or override these.
+// Still: don't reference these from components — use semantic tokens.
+// =====================================================================
+@use 'palette' as *;
+
+:root {
+  --c-blue-50:  #{$palette-blue-50};
+  --c-blue-100: #{$palette-blue-100};
+  --c-blue-200: #{$palette-blue-200};
+  --c-blue-300: #{$palette-blue-300};
+  --c-blue-400: #{$palette-blue-400};
+  --c-blue-500: #{$palette-blue-500};
+  --c-blue-600: #{$palette-blue-600};
+  --c-blue-700: #{$palette-blue-700};
+  --c-blue-800: #{$palette-blue-800};
+  --c-blue-900: #{$palette-blue-900};
+
+  --c-gray-0:    #{$palette-gray-0};
+  --c-gray-50:   #{$palette-gray-50};
+  --c-gray-100:  #{$palette-gray-100};
+  --c-gray-200:  #{$palette-gray-200};
+  --c-gray-300:  #{$palette-gray-300};
+  --c-gray-400:  #{$palette-gray-400};
+  --c-gray-500:  #{$palette-gray-500};
+  --c-gray-600:  #{$palette-gray-600};
+  --c-gray-700:  #{$palette-gray-700};
+  --c-gray-800:  #{$palette-gray-800};
+  --c-gray-900:  #{$palette-gray-900};
+  --c-gray-1000: #{$palette-gray-1000};
+
+  --c-green-500:  #{$palette-green-500};
+  --c-amber-500:  #{$palette-amber-500};
+  --c-amber-800:  #{$palette-amber-800};
+  --c-red-500:    #{$palette-red-500};
+  --c-cyan-500:   #{$palette-cyan-500};
+  --c-purple-500: #{$palette-purple-500};
+}

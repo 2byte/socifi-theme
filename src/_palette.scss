@@ -1,0 +1,47 @@
+// =====================================================================
+// PALETTE — primitive colors as Sass variables.
+//
+// Single source of truth for both worlds:
+//   * Sass (build-time) — consumed by quasar.variables.scss to feed
+//     Quasar's $primary/$secondary/etc.
+//   * CSS (runtime)     — exposed as custom properties in _primitives.scss
+//     so themes, dark mode, and devtools can swap them live.
+//
+// Don't reference these from component styles directly — go through the
+// semantic tokens layer (_semantic.scss). Components should never know
+// the exact shade.
+// =====================================================================
+
+// --- Brand: blue scale ------------------------------------------------
+$palette-blue-50:  #f0f4fa;
+$palette-blue-100: #e7f3ff;
+$palette-blue-200: #ddeaff;
+$palette-blue-300: #b6cff6;
+$palette-blue-400: #82a2e5;
+$palette-blue-500: #4267b2;  // brand
+$palette-blue-600: #365899;
+$palette-blue-700: #1d4684;
+$palette-blue-800: #14305a;
+$palette-blue-900: #0d1f3d;
+
+// --- Neutral ----------------------------------------------------------
+$palette-gray-0:    #ffffff;
+$palette-gray-50:   #f6f9ff;
+$palette-gray-100:  #f0f2f5;
+$palette-gray-200:  #e4e8ef;
+$palette-gray-300:  #d8dfea;
+$palette-gray-400:  #b8c0cc;
+$palette-gray-500:  #8a929b;
+$palette-gray-600:  #606770;
+$palette-gray-700:  #404550;
+$palette-gray-800:  #22262d;
+$palette-gray-900:  #1d2129;
+$palette-gray-1000: #0e1014;
+
+// --- Status -----------------------------------------------------------
+$palette-green-500: #21ba45;
+$palette-amber-500: #f2c037;
+$palette-amber-800: #856404;
+$palette-red-500:   #c10015;
+$palette-cyan-500:  #31ccec;
+$palette-purple-500: #9c27b0;

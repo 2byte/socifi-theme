@@ -1,0 +1,26 @@
+// =====================================================================
+// THEME ENTRY POINT.
+//
+// This folder is structured as a future standalone package: when you
+// extract it to its own repo, you'll move this whole directory and
+// adjust the import path in app.scss. Nothing in this folder depends
+// on anything outside it except the Sass standard library.
+//
+// Load order (matters):
+//   1. _palette       — Sass palette (forwarded for external consumers
+//                       like quasar.variables.scss)
+//   2. _primitives    — palette → CSS custom properties
+//   3. _semantic      — semantic tokens (light/default)
+//   4. _layers        — declares cascade layer order
+//   5. _dark          — dark-mode overrides on body.body--dark
+//   6. _components    — wrapped in `@layer components`
+//   7. _utilities     — wrapped in `@layer utilities`
+// =====================================================================
+
+@forward 'palette';
+@use 'primitives';
+@use 'semantic';
+@use 'layers';
+@use 'dark';
+@use 'components';
+@use 'utilities';

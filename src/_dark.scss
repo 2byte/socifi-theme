@@ -1,0 +1,50 @@
+// =====================================================================
+// DARK THEME — semantic token overrides.
+//
+// Activation: Quasar's `Dark.set(true)` (or any toggle that adds
+// `body--dark` to <body>). We piggyback on Quasar's own class so app
+// code can keep using $q.dark.toggle().
+//
+// Strategy: keep primitives intact, just point semantic tokens at
+// different primitives. Component CSS doesn't need to know dark mode
+// exists.
+// =====================================================================
+
+body.body--dark {
+  /* --- Brand: lift the blue for contrast on dark surfaces ---------- */
+  --color-primary:             var(--c-blue-400);
+  --color-primary-hover:       var(--c-blue-300);
+  --color-primary-active:      var(--c-blue-200);
+  --color-primary-soft:        rgba(66, 103, 178, 0.18);
+  --color-primary-soft-strong: rgba(66, 103, 178, 0.32);
+  --color-on-primary:          var(--c-gray-900);
+
+  /* --- Surfaces flip ---------------------------------------------- */
+  --color-surface:             var(--c-gray-800);
+  --color-surface-base:        var(--c-gray-1000);
+  --color-surface-soft:        var(--c-gray-700);
+  --color-surface-soft-strong: var(--c-gray-600);
+
+  /* --- Text flips ------------------------------------------------- */
+  --color-text:                var(--c-gray-50);
+  --color-text-muted:          var(--c-gray-400);
+  --color-text-on-brand:       var(--c-gray-900);
+  --color-text-link:           var(--c-blue-300);
+
+  /* --- Borders ---------------------------------------------------- */
+  --color-border:              var(--c-gray-700);
+  --color-border-strong:       var(--c-blue-400);
+  --color-border-subtle:       var(--c-gray-700);
+
+  /* --- Status: lighter fg, dimmer bg ------------------------------ */
+  --color-success-fg:          var(--c-blue-300);
+  --color-success-bg:          rgba(66, 103, 178, 0.22);
+  --color-warning-fg:          var(--c-amber-500);
+  --color-warning-bg:          rgba(242, 192, 55, 0.18);
+  --color-danger-fg:           var(--c-red-500);
+
+  /* --- Shadows: deeper, softer ------------------------------------ */
+  --shadow-sm:                 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md:                 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-card-soft:          1px 3px 3px -1px rgba(0, 0, 0, 0.30);
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@socifi/ui-theme",
+  "version": "1.0.0",
+  "description": "Shared design system for Socifi Quasar applications: design tokens, dark mode, base component styles.",
+  "license": "UNLICENSED",
+  "private": true,
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": "./src/index.scss",
+    "./palette": "./src/_palette.scss",
+    "./primitives": "./src/_primitives.scss",
+    "./semantic": "./src/_semantic.scss",
+    "./dark": "./src/_dark.scss",
+    "./components": "./src/_components.scss",
+    "./utilities": "./src/_utilities.scss"
+  },
+  "peerDependencies": {
+    "quasar": "^2.16.0",
+    "sass": "^1.70.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
