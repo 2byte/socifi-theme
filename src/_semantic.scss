@@ -20,6 +20,7 @@
   --color-primary-soft-strong: var(--c-blue-200);
   --color-primary-light:       var(--c-blue-50);
   --color-on-primary:          var(--c-gray-0);
+  --color-primary-text:         var(--c-blue-600);
 
   /* --- Surfaces ---------------------------------------------------- */
   --color-surface:             var(--c-gray-0);     /* cards, popovers */
@@ -28,7 +29,7 @@
   --color-surface-soft-strong: var(--c-blue-200);   /* drawer active item, card actions */
 
   /* --- Text -------------------------------------------------------- */
-  --color-text:                var(--c-blue-500);
+  --color-text:                var(--c-blue-600);
   --color-text-muted:          var(--c-gray-600);
   --color-text-on-brand:       var(--c-gray-0);
   --color-text-link:           var(--c-blue-700);

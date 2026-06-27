@@ -49,6 +49,7 @@
     background-color: var(--color-primary);
     color: var(--color-text-on-brand);
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    background: linear-gradient(90deg, #3e8ad5 0%, #1157a7 100%) !important;
   }
 
   .app-title {
@@ -198,6 +199,7 @@
     background-color: var(--color-primary-light) !important;
     border-radius: var(--radius-sm);
     border: 1px solid var(--color-border-strong);
+    box-shadow: 1px 1px 1px inset rgb(92 139 223 / 40%);
   }
 
   body .q-field--filled .q-field__control {
@@ -218,6 +220,22 @@
     color: var(--color-text-muted);
   }
 
+  /* === Table ====================================================== */
+  body .q-table__card {
+    color: var(--color-primary-text) !important;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+  body .q-field.q-select {
+    padding: 0.1em 0.4em;
+  }
+
+  body .q-field--outlined .q-field__control:before {
+    border: 1px solid rgba(215, 230, 252, 0.24) !important;
+    transition: border-color 0.36s cubic-bezier(0.4, 0, 0.2, 1);
+}
   /* === Notes list ================================================= */
   .notes-header {
     margin-bottom: 16px;
