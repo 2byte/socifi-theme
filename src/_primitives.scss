@@ -8,6 +8,8 @@
 @use 'palette' as *;
 
 :root {
+  --color-slate-200: oklch(92.9% 0.013 255.508);
+
   --c-blue-50:  #{$palette-blue-50};
   --c-blue-100: #{$palette-blue-100};
   --c-blue-200: #{$palette-blue-200};
@@ -31,6 +33,23 @@
   --c-gray-800:  #{$palette-gray-800};
   --c-gray-900:  #{$palette-gray-900};
   --c-gray-1000: #{$palette-gray-1000};
+
+  /* Dark-theme surface ramp (darkest -> lightest). This is not a second
+     general-purpose neutral scale: it is the exact set of steps the dark
+     theme layers with. They live here so _dark.scss holds no magic hex
+     values and the whole depth model can be tuned from one place.
+     A touch bluer than $palette-gray-* (B/R ~= 1.75 vs 1.45) so the dark
+     theme reads cool next to the violet-grey light theme instead of muddy.
+     Steps are chosen by perceptual lightness (CIELAB L*): every neighbour
+     sits >= 3 L* apart, the point where a dark fill change is reliably
+     visible. Page -> card is ~9.5 L*, enough to read without any border. */
+  --c-ink-1000: #0a0b12; /* page              L*  3.1 */
+  --c-ink-975:  #0f1119; /* recessed controls L*  5.2 */
+  --c-ink-950:  #151824; /* wells             L*  8.5 */
+  --c-ink-900:  #1c2032; /* cards             L* 12.7 */
+  --c-ink-850:  #262b42; /* raised surfaces   L* 18.1 */
+  --c-ink-800:  #323855; /* hover fills       L* 24.2 */
+  --c-ink-700:  #414968; /* strong fills      L* 30.7 */
 
   --c-green-500:  #{$palette-green-500};
   --c-amber-500:  #{$palette-amber-500};

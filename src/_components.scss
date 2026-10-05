@@ -1,325 +1,791 @@
-// =====================================================================
-// COMPONENT STYLES.
-//
-// Two conventions in this file:
-//   1. Only semantic tokens (var(--color-*), var(--radius-*), etc.).
-//      No primitives, no hex literals.
-//   2. Selectors that need to override Quasar's defaults are prefixed
-//      with `body`. Quasar's own CSS is unlayered and cannot be put
-//      into a layer without modifying its build, so we cannot win via
-//      @layer alone — we win via specificity (body + .q-foo = 0,1,1 >
-//      Quasar's 0,1,0). Inside @layer, the body-prefixed rules still
-//      keep their specificity and now beat Quasar without !important.
-//
-// Wrapped in `@layer components` — order is declared in app.scss as
-// `tokens, components, utilities` so that utility classes always win.
-// =====================================================================
-@use "sass:color";
+// Quasar component styling mapped to the Socifi dashboard design system.
+// Keep selectors component-oriented and consume semantic tokens so the
+// light/dark palettes remain consistent across applications.
 
-@layer components {
+html,
+body {
+  min-height: 100%;
+}
 
-  /* === Base ======================================================= */
-  html, body {
-    min-height: 100%;
+body {
+  margin: 0;
+  background: var(--color-surface-base);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+// Keep every surface square, including Quasar defaults and app-level
+// scoped styles that may define their own corner radii. List items and
+// buttons pick their own `--radius-xl` corners below with `!important`,
+// so legacy pill/12px app radii stay suppressed.
+  body *:not(.q-field__control) {
+    border-radius: 0 !important;
   }
 
-  body {
-    background-color: var(--color-surface-base);
-    color: var(--color-text);
-    font-family: var(--font-family-base);
-    font-size: var(--font-size-base);
-    margin: 0;
-  }
+#q-app,
+body .q-page {
+  min-height: 100vh;
+  background: var(--color-surface-base);
+}
 
-  #q-app {
-    background-color: var(--color-surface-base);
-  }
+body .q-layout__container {
+  min-height: 100vh;
+}
 
-  /* === Layout ===================================================== */
-  body .q-page {
-    background-color: transparent;
-  }
+/* Navigation */
+body .q-header {
+  background: var(--color-header-surface);
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border-subtle);
+  box-shadow: none;
+  /* Frosted strip: content scrolls behind the translucent bar.
+     Saturation is kept mild on purpose — the page carries a soft brand
+     bloom just below the bar, and `saturate(180%)` amplified it into a
+     violet smudge along the header's bottom edge. */
+  backdrop-filter: saturate(135%) blur(20px);
+  -webkit-backdrop-filter: saturate(135%) blur(20px);
+}
 
-  body .q-layout__container {
-    min-height: 100vh;
-  }
+body .q-toolbar {
+  min-height: 68px;
+}
 
-  /* === Header ===================================================== */
-  body .app-header {
-    background-color: var(--color-primary);
-    color: var(--color-text-on-brand);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    background: linear-gradient(90deg, #3e8ad5 0%, #1157a7 100%) !important;
-  }
+.app-title,
+.header-logo {
+  color: var(--color-text);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
 
-  .app-title {
-    font-weight: 600;
-    color: var(--color-text-on-brand);
-  }
+.header-actions {
+  gap: 8px;
+}
 
-  .header-logo {
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
+body .q-drawer {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border-subtle);
+}
 
-  .header-actions {
-    gap: 12px;
-  }
+.drawer-top {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
 
-  .header-actions .q-btn {
-    color: var(--color-text-on-brand);
-  }
+.drawer-logo {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
 
-  /* === Drawer ===================================================== */
-  body .app-drawer {
+.drawer-caption,
+.drawer-help {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+body .q-item__label--header {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/*
+ * Navigation rows follow the design-system nav item:
+ * flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium
+ * text-slate-500 hover:bg-slate-50 hover:text-slate-800 (dark:
+ * text-slate-400 hover:bg-slate-900 hover:text-white).
+ * `q-item--dense` is matched too, so workspace lists stay uniform.
+ */
+body .q-item,
+body .q-item--dense,
+body .q-list--dense > .q-item {
+  min-height: 44px; /* h-11 */
+  padding: 8px 12px; /* px-3 */
+  gap: 12px; /* gap-3 */
+  border-radius: var(--radius-xl) !important; /* rounded-xl */
+  color: var(--color-item-text);
+  font-size: 14px; /* text-sm */
+  font-weight: 500; /* font-medium */
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+/*
+ * Quasar reserves a 56px gutter for avatar sections and a 16px gap for
+ * trailing sections. The design system spaces rows with `gap-3` instead,
+ * so those paddings are dropped here.
+ */
+body .q-item__section--avatar {
+  min-width: 0;
+  padding-right: 0;
+}
+
+body .q-item__section--side:not(.q-item__section--avatar) {
+  padding-left: 0;
+}
+
+body .q-item {
+  font-weight: 400;
+}
+
+body .q-item:hover {
+  background: var(--color-item-hover-bg);
+  color: var(--color-item-hover-text);
+}
+
+body .q-item.q-router-link--active,
+.drawer-nav-item--active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-text);
+}
+
+.drawer-nav-item {
+  margin: 2px 8px;
+}
+
+.drawer-footer {
+  padding: 16px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.drawer-header {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+/* Surfaces */
+body .q-card,
+body .note-card,
+body .auth-card,
+body .q-table__card {
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-card-soft);
+}
+
+body .q-card__section {
+  color: var(--color-text);
+}
+
+body .q-card__section + .q-card__section {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/*
+ * Quasar spaces `q-gutter-*` children with negative margins on the
+ * container. Inside a card section those margins overflow the card padding
+ * and get clipped by `.q-card`'s `overflow: hidden`, so the content ends up
+ * flush against one edge (e.g. fields touch the right border). Flex `gap`
+ * keeps the same rhythm without the overflow.
+ */
+body .q-card__section.row[class*="q-gutter"],
+body .q-card__section.column[class*="q-gutter"] {
+  margin: 0;
+}
+
+body .q-card__section.row[class*="q-gutter"] > *,
+body .q-card__section.column[class*="q-gutter"] > * {
+  margin: 0 !important;
+}
+
+body .q-card__section.q-gutter-xs {
+  gap: 4px;
+}
+
+body .q-card__section.q-gutter-sm {
+  gap: 8px;
+}
+
+body .q-card__section.q-gutter-md {
+  gap: 16px;
+}
+
+body .q-card__section.q-gutter-lg {
+  gap: 24px;
+}
+
+body .q-card__section.q-gutter-xl {
+  gap: 32px;
+}
+
+body .q-card__actions {
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-surface);
+}
+
+body .q-card-header {
+  background: var(--color-primary);
+  color: var(--color-text-on-brand);
+}
+
+.auth-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-surface-base);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+}
+
+.auth-title,
+.text-h4 {
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Actions and controls */
+body .q-btn {
+  border-radius: var(--radius-xl) !important; /* rounded-xl */
+  font-family: var(--font-family-base);
+  font-weight: 600;
+  letter-spacing: 0;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+/*
+ * NOTE — filled coloured buttons are deliberately NOT styled here.
+ *
+ * `[color="primary"]` selectors used to sit in this spot and could never
+ * match: QBtn declares `color` as a prop, so Vue consumes the attribute and
+ * renders `bg-primary text-white` instead. On top of that, Quasar declares
+ * `.bg-primary { background: var(--q-primary) !important }` and
+ * `.text-white { color: #fff !important }`, so a plain selector would lose
+ * the cascade even if it did match.
+ *
+ * Filled buttons therefore follow `--q-primary` (i.e. `$primary` in
+ * quasar.variables.scss) rather than `--color-primary`, and that split is
+ * intentional: `--color-primary` is the *accent* violet used for borders,
+ * focus rings, icons and labels, and in dark mode it is light enough that
+ * white text on it drops to 3.1:1 — so it must never be used as a fill
+ * underneath white text.
+ */
+
+/*
+ * Not elevated: flat (ghost), outline, push and the explicitly flat
+ * `unelevated` variant. Quasar already zeroes these, but the reset is
+ * repeated here so the elevated selectors below cannot leak into them.
+ */
+body .q-btn--flat:before,
+body .q-btn--outline:before,
+body .q-btn--unelevated:before,
+body .q-btn--push:before {
+  box-shadow: none;
+}
+
+body .q-btn--flat {
+  color: var(--color-primary-text);
+}
+
+/*
+ * Default (standard) Quasar buttons map to the design-system `secondary`
+ * variant: white surface, 1px slate border, slate text. Colored buttons
+ * (`color="primary"` renders as `bg-primary text-white`) keep their own
+ * fill, so only the non-colored ones get the surface treatment.
+ */
+body .q-btn:not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push):not([class*="bg-"]) {
+  border: 1px solid var(--color-button-border);
+  background: var(--color-button-surface);
+  color: var(--color-button-text);
+}
+
+/*
+ * Elevation is painted on `::before` ONLY. Quasar's own Material shadow
+ * lives on that overlay, so a shadow set on the element is both hidden
+ * behind it and stacked a second time. These selectors outrank Quasar's
+ * `:before` rules — including the larger `:active` state and the
+ * `.q-btn--standard` transition — so each token is the single source of
+ * truth for its variant.
+ */
+body .q-btn:not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push):not([class*="bg-"]):before {
+  box-shadow: var(--shadow-button);
+  transition: box-shadow 140ms ease;
+}
+
+/* Colored action buttons: brand-tinted primary elevation. */
+body .q-btn:not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push)[class*="bg-"]:before {
+  box-shadow: var(--shadow-button-primary);
+  transition: box-shadow 140ms ease;
+}
+
+body .q-btn:not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push):not([class*="bg-"]):hover {
+  border-color: var(--color-button-border-hover);
+  background: var(--color-button-surface-hover);
+}
+
+body .q-btn--outline:before {
+  border-color: var(--color-border-strong);
+}
+
+/*
+ * Fields follow the design-system input:
+ * h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm
+ * focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10.
+ * Quasar renders borders through :before/:after, so both variants are
+ * normalized here instead of styling the native input element.
+ */
+body .q-field {
+  width: 100%;
+  color: var(--color-field-text);
+  font-size: 14px;
+}
+
+body .q-field__control {
+  box-sizing: border-box;
+  min-height: 44px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-field);
+  background: var(--color-field-surface);
+  color: var(--color-field-text);
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+body .q-field--auto-height .q-field__control {
+  height: auto;
+  min-height: 44px;
+}
+
+/*
+ * Quasar paints field surfaces and borders on multiple states
+ * (highlighted, dark, readonly). Those selectors are more specific than a
+ * plain variant rule, so the same states are mirrored here. The result is
+ * a single flat surface for both outlined and filled variants.
+ */
+body .q-field--outlined .q-field__control,
+body .q-field--filled .q-field__control,
+body .q-field--outlined.q-field--highlighted .q-field__control,
+body .q-field--filled.q-field--highlighted .q-field__control,
+body .q-field--outlined.q-field--dark .q-field__control,
+body .q-field--filled.q-field--dark .q-field__control,
+body .q-field--filled.q-field--dark.q-field--highlighted .q-field__control {
+  border-radius: var(--radius-field);
+  background: var(--color-field-surface);
+}
+
+body .q-field--outlined .q-field__control:before,
+body .q-field--filled .q-field__control:before,
+body .q-field--outlined.q-field--highlighted .q-field__control:before,
+body .q-field--filled.q-field--highlighted .q-field__control:before,
+body .q-field--outlined.q-field--dark .q-field__control:before,
+body .q-field--filled.q-field--dark .q-field__control:before,
+body .q-field--filled.q-field--dark.q-field--highlighted .q-field__control:before,
+body .q-field--filled.q-field--readonly .q-field__control:before {
+  inset: 0;
+  border: 1px solid var(--color-field-border);
+  border-radius: var(--radius-field);
+  background: transparent;
+  opacity: 1;
+  transition: border-color 150ms ease;
+}
+
+body .q-field--outlined .q-field__control:after,
+body .q-field--filled .q-field__control:after {
+  inset: 0;
+  height: auto;
+  border: 0;
+  border-radius: var(--radius-field);
+  background: transparent;
+  transition: border-color 150ms ease;
+}
+
+/* Quasar paints the focus/highlight border on :after with a 2px
+ * currentColor stroke. The design system shows a 1px violet border plus
+ * the soft --shadow-focus ring, so the second stroke is suppressed. */
+body .q-field--outlined.q-field--highlighted .q-field__control:after,
+body .q-field--filled.q-field--highlighted .q-field__control:after {
+  border: 0;
+  background: transparent;
+}
+
+/* Cancel Quasar's black hover border and the transparent stroke it
+ * applies on hover while focused; the design system keeps the field
+ * border unchanged on hover. */
+body .q-field--outlined .q-field__control:hover:before,
+body .q-field--filled .q-field__control:hover:before {
+  border-color: var(--color-field-border);
+}
+
+/* Focus: violet border matching `focus:border-violet-400`. Higher
+ * specificity than Quasar's highlighted + hover rules. */
+body .q-field--outlined.q-field--focused .q-field__control:before,
+body .q-field--filled.q-field--focused .q-field__control:before,
+body .q-field--outlined.q-field--highlighted .q-field__control:before,
+body .q-field--filled.q-field--highlighted .q-field__control:before,
+body .q-field--outlined.q-field--focused .q-field__control:hover:before,
+body .q-field--filled.q-field--focused .q-field__control:hover:before {
+  border-color: var(--color-field-focus);
+}
+
+body .q-field--focused .q-field__control {
+  box-shadow: var(--shadow-focus);
+}
+
+body .q-field--highlighted {
+  color: var(--color-field-focus);
+}
+
+body .q-field__native,
+body .q-field__input {
+  color: var(--color-field-text);
+  font-size: 14px;
+}
+
+body .q-field__native::placeholder,
+body .q-field__input::placeholder {
+  color: var(--color-field-placeholder);
+  opacity: 1;
+}
+
+body .q-field__label,
+body .q-field__marginal,
+body .q-field__bottom {
+  color: var(--color-text-muted);
+}
+
+/* Quasar hardcodes white-ish text and labels in dark mode. Re-point them
+ * at semantic tokens so the theme stays in charge. */
+body .q-field--dark .q-field__native,
+body .q-field--dark .q-field__input {
+  color: var(--color-field-text);
+}
+
+body .q-field--dark .q-field__label,
+body .q-field--dark .q-field__marginal,
+body .q-field--dark .q-field__bottom {
+  color: var(--color-text-muted);
+}
+
+body .q-field__label {
+  top: 10px;
+  font-size: 14px;
+}
+
+body .q-field--highlighted .q-field__label {
+  color: var(--color-field-focus);
+}
+
+body .q-field--labeled .q-field__native,
+body .q-field--labeled .q-field__prefix,
+body .q-field--labeled .q-field__suffix {
+  padding-top: 14px;
+  padding-bottom: 2px;
+  line-height: 20px;
+}
+
+body .q-field--labeled .q-field__input {
+  min-height: 20px;
+  line-height: 20px;
+}
+
+body .q-field.field-compact {
+  width: 5rem;
+}
+
+body .q-field.field-compact .q-field__control {
+  min-height: 36px;
+  height: 36px;
+}
+
+/* Tables, dialogs and feedback */
+body .q-table__card {
+  border-radius: var(--radius-lg);
+}
+
+body .q-table thead tr,
+body .q-table th {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body .q-table tbody td {
+  color: var(--color-text);
+}
+
+body .q-table tbody tr:hover {
+  background: var(--color-surface-base);
+}
+
+body .q-dialog__inner > .q-card {
+  min-width: min(320px, calc(100vw - 32px));
+}
+
+body .q-menu,
+body .q-tooltip {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
+}
+
+/* Existing Socifi content helpers */
+.notes-header {
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stats-card {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: 20px;
+  box-shadow: var(--shadow-card-soft);
+}
+
+.stats-card-title {
+  margin-bottom: 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stats-card-value {
+  color: var(--color-text);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.note-card {
+  margin-bottom: 16px;
+  padding: 18px;
+}
+
+.note-title {
+  margin-bottom: 8px;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.note-content,
+.note-meta {
+  color: var(--color-text-muted);
+}
+
+.note-content {
+  margin-bottom: 14px;
+}
+
+.note-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.sync-status {
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sync-status--synced {
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+
+.sync-status--pending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+}
+
+/* =====================================================================
+ * DARK DEPTH & GLASS
+ *
+ * Everything above is theme-agnostic: it only ever references semantic
+ * tokens, so one set of rules serves both palettes. This block is the single
+ * dark-only exception, and it exists because light mode's elevation model —
+ * soft blue-grey shadows falling on white — has no dark equivalent. On a
+ * near-black page a soft, low-alpha shadow is simply invisible, so elevation
+ * has to be rebuilt out of the surfaces themselves:
+ *
+ *   1. FILLS  — the drawer drops to its own step ("well") instead of sharing
+ *               the card colour, so the shell reads as three planes:
+ *               page < well < card < floating.
+ *   2. EDGES  — every raised surface gets a hairline plus a 1px inner top
+ *               highlight. At ~1.1:1 fill steps it is the *edge*, not the
+ *               fill, that makes a surface legible.
+ *   3. FLOAT  — menus, dialogs, tooltips and notifications get glass and a
+ *               two-part shadow; dialogs also get a scrim.
+ *   4. ACCENT — one or two places where the brand is allowed to emit light.
+ *
+ * Every selector here is prefixed with `body.body--dark`, so specificity is
+ * strictly higher than the equivalent light-mode rule above it, and it is
+ * also later in the cascade. Light mode is untouched by this block.
+ * ===================================================================== */
+body.body--dark {
+  /* --- 1. FILLS ---------------------------------------------------- */
+
+  /* The drawer becomes a well rather than a second card. */
+  .q-drawer {
     background: var(--color-surface-soft);
-    color: var(--color-text-link);
   }
 
-  .drawer-top {
-    padding: 18px 18px 12px;
-    border-bottom: 1px solid var(--color-border-subtle);
+  /* Table rows used the page colour as their hover fill, which punched a
+     hole *through* the card they sit on. The item hover fill is a step up
+     from the card instead. */
+  .q-table tbody tr:hover {
+    background: var(--color-item-hover-bg);
   }
 
-  .drawer-logo {
-    color: var(--color-text-link);
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-  }
-
-  .drawer-caption {
-    color: var(--color-text-link);
-    font-size: 13px;
-    margin-top: 6px;
-  }
-
-  .drawer-nav-item {
-    margin-bottom: 6px;
-  }
-
-  .drawer-nav-item--active {
-    background: var(--color-surface-soft-strong);
-  }
-
-  .drawer-footer {
-    padding: 18px;
-  }
-
-  .drawer-help {
-    margin-top: 12px;
-    font-size: 13px;
-    color: var(--color-text-link);
-  }
-
-  .drawer-header {
-    color: var(--color-primary);
-    font-weight: 600;
-  }
-
-  /* === Cards ====================================================== */
-  body .q-card,
-  body .note-card,
-  body .auth-card {
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm) !important;
-    padding: 1em 1.2em 0em 1.2em;
-  }
-
-  /* Custom class added by templates, not a real Quasar class */
-  body .q-card-header {
-    background: var(--color-primary);
-    color: var(--color-text-on-brand);
-  }
-
-  body .q-card__section {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border-subtle);
-  }
-
-  body .q-card__actions {
-    background: var(--color-surface-soft-strong);
-    border-bottom: 1px solid var(--color-border-strong);
-    padding-top: 1.2em;
-    padding-bottom: 1.2em;
-    margin-left: -1.2em;
-    margin-right: -1.2em;
-  }
-
-
-  body .q-card__section {
-    color: var(--color-text);
-  }
-  /* === Auth page ================================================== */
-  .auth-page {
-    background-color: var(--color-primary-soft);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .auth-card {
-    width: 100%;
-    max-width: 420px;
-    padding: 24px;
-  }
-
-  .auth-title,
-  .text-h4 {
-    font-size: var(--font-size-xl);
-    font-weight: 600;
-    color: var(--color-text);
-  }
-
-  /* === Buttons ==================================================== */
-  .q-btn,
-  .q-btn--action {
-    font-family: var(--font-family-base);
-    box-shadow: var(--shadow-card-soft);
-  }
-
-  body .q-btn[color="primary"] {
-    background-color: var(--color-primary) !important;
-    color: var(--color-on-primary) !important;
-  }
-
-  body .q-btn[color="primary"]:hover {
-    background-color: var(--color-primary-hover) !important;
-  }
-
-  .q-btn.flat {
-    color: var(--color-primary);
-  }
-
-  /* === Inputs (q-field) =========================================== */
-  body .q-field {
-    background-color: var(--color-primary-light) !important;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-border-strong);
-    box-shadow: 1px 1px 1px inset rgb(92 139 223 / 40%);
-  }
-
-  body .q-field--filled .q-field__control {
-    background: var(--color-primary-soft);
-  }
-
-  body .q-field--filled .q-field__control:before {
-    background: var(--color-primary-soft);
-    border-bottom: 1px solid var(--color-border-strong);
-  }
-
-  body .q-field--outlined .q-field__native,
-  body .q-input__control {
-    color: var(--color-text);
-  }
-
-  body .q-field__label {
-    color: var(--color-text-muted);
-  }
-
-  /* === Table ====================================================== */
-  body .q-table__card {
-    color: var(--color-primary-text) !important;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 3px -1px rgba(0, 0, 0, 0.2) !important;
-}
-
-  body .q-field.q-select {
-    padding: 0.1em 0.4em;
-  }
-
-  body .q-field--outlined .q-field__control:before {
-    border: 1px solid rgba(215, 230, 252, 0.24) !important;
-    transition: border-color 0.36s cubic-bezier(0.4, 0, 0.2, 1);
-}
-  /* === Notes list ================================================= */
-  .notes-header {
-    margin-bottom: 16px;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-  }
-
-  .stats-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    padding: 18px;
-    box-shadow: var(--shadow-card-soft);
-    backdrop-filter: blur(10px);
-  }
-
-  .stats-card-title {
-    font-size: 13px;
-    color: var(--color-text-muted);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-
-  .stats-card-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--color-text);
-  }
-
-  .note-card {
-    padding: 18px;
-    margin-bottom: 16px;
-  }
-
-  .note-title {
-    margin-bottom: 8px;
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-  }
-
-  .note-content {
-    color: var(--color-text-muted);
-    margin-bottom: 14px;
-  }
-
-  .note-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--color-text-muted);
-  }
-
-  .sync-status {
-    border-radius: var(--radius-pill);
-    padding: 4px 10px;
-    font-size: 12px;
-    text-transform: uppercase;
-  }
-
-  .sync-status--synced {
-    background-color: var(--color-success-bg);
-    color: var(--color-success-fg);
-  }
-
-  .sync-status--pending {
-    background-color: var(--color-warning-bg);
-    color: var(--color-warning-fg);
-  }
-
-  /* === Dialog ===================================================== */
+  /* Dialogs are their own plane: they contain forms, so they get the raised
+     step rather than the card step or a translucent fill. */
   .q-dialog__inner > .q-card {
-    min-width: 320px;
+    background: var(--color-surface-raised);
   }
 
-  .q-card-section {
-    padding: 18px;
+  .q-dialog__backdrop {
+    background: var(--scrim);
   }
 
-  .q-card-actions {
-    padding: 16px 18px;
+  /* --- 2. EDGES ---------------------------------------------------- */
+
+  /* Quasar ships its own dark chrome border:
+       body.body--dark .q-header, .q-footer, .q-drawer
+         { border-color: rgba(255, 255, 255, 0.28); }
+     Same specificity as any `body .q-*` rule, so it beat the token set in
+     _dark.scss and painted white at 0.28 where the theme asked for a 0.07
+     hairline — four times brighter, and by far the brightest line on the
+     page. Matching the selectors class-for-class and coming later in the
+     cascade pins it back to the token. */
+  .q-header,
+  .q-footer,
+  .q-drawer {
+    border-color: var(--color-border-subtle);
+  }
+
+  /* Quasar only draws the drawer seam under `.q-drawer--bordered`, which the
+     app never sets, so the shell had no visible split between drawer and
+     page. The design system's sidebar has one (`border-r border-slate-800`),
+     so it is drawn here. */
+  .q-drawer--left {
+    border-right: 1px solid var(--color-border-subtle);
+  }
+
+  .q-drawer--right {
+    border-left: 1px solid var(--color-border-subtle);
+  }
+
+  /* Contact shadow + the 1px inner top highlight that is what actually makes
+     these edges legible. `!important` because every card in the app is
+     `<q-card flat>`, and `flat` adds Quasar's
+       .no-shadow, .shadow-0 { box-shadow: none !important; }
+     which was silently deleting this whole declaration — no contact shadow
+     and no lit top edge — leaving the cards as flat rectangles. In dark the
+     theme owns surface elevation, so it wins here deliberately. */
+  .q-card,
+  .note-card,
+  .auth-card,
+  .q-table__card,
+  .stats-card {
+    box-shadow: var(--shadow-card-soft), var(--surface-highlight) !important;
+  }
+
+  /* Dialogs are `flat` too, so they would have inherited the card shadow
+     above. They sit above a scrim rather than on the page, so they get the
+     ambient floating shadow instead. */
+  .q-dialog__inner > .q-card {
+    box-shadow: var(--shadow-float), var(--surface-highlight) !important;
+  }
+
+  /* --- 3. FLOATING LAYERS ------------------------------------------ */
+
+  .q-menu,
+  .q-tooltip {
+    border-color: var(--color-border-strong);
+    background: var(--glass-surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--shadow-float), var(--surface-highlight);
+  }
+
+  /* Guarded with :not([class*="bg-"]) so `color="negative"` and friends keep
+     their own status fill — this only dresses the default notification. */
+  .q-notification:not([class*="bg-"]) {
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-float), var(--surface-highlight);
+  }
+
+  /* --- 4. BRAND ACCENTS -------------------------------------------- */
+
+  /* Primary action button. `::before` is the only elevation layer this theme
+     paints (see the button rules above), and Quasar's own Material shadow
+     lives on the same pseudo-element — so the glow is applied there too, not
+     on the element, where it would be both hidden and stacked twice.
+     The `:not(...)` chain is repeated only to outrank the "colored action
+     buttons" rule above; the glow must not leak onto bg-negative/bg-positive,
+     where a violet halo would be plain wrong. */
+  .q-btn:not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push)[class*="bg-primary"]:before {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .q-btn:not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push)[class*="bg-primary"]:hover:before {
+    box-shadow: var(--shadow-glow-hover);
+  }
+
+  /* A filled primary button gets a 1px lift on hover. There is no colour to
+     change — `.bg-primary` and `.text-white` are both `!important` in
+     Quasar's stylesheet — so the transform plus the glow intensification is
+     the whole hover affordance. */
+  .q-btn[class*="bg-primary"]:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Selected navigation row: an inset accent bar. An inset shadow follows the
+     row's 4px radius, whereas a border would square the corner off. */
+  .q-item.q-router-link--active,
+  .drawer-nav-item--active {
+    box-shadow: inset 3px 0 0 0 var(--color-primary);
+  }
+
+  /* --- 5. PAGE ------------------------------------------------------ */
+
+  /* One soft brand bloom anchored to the top of the content area. It is the
+     cheapest way to stop a large dark page from reading as flat black, and
+     it scrolls away with the content rather than acting as a fixed vignette.
+     Pulled up and dimmed from `50% -12% / 0.09`: at that strength its lower
+     half sat directly under the fixed top bar and read as the bar emitting
+     light rather than as page depth. */
+  .q-page {
+    background-color: var(--color-surface-base);
+    background-image: radial-gradient(
+      1200px 420px at 50% -22%,
+      rgba(114, 99, 223, 0.07),
+      transparent 70%
+    );
   }
 }

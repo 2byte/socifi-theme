@@ -11,16 +11,14 @@
 //                       like quasar.variables.scss)
 //   2. _primitives    — palette → CSS custom properties
 //   3. _semantic      — semantic tokens (light/default)
-//   4. _layers        — declares cascade layer order
-//   5. _dark          — dark-mode overrides on body.body--dark
-//   6. _components    — wrapped in `@layer components`
-//   7. _utilities     — wrapped in `@layer utilities`
+//   4. _dark          — dark-mode overrides on body.body--dark
+//   5. _components    — unlayered overrides for Quasar's unlayered CSS
+//   6. _utilities     — loaded last so utility classes can take precedence
 // =====================================================================
 
 @forward 'palette';
 @use 'primitives';
 @use 'semantic';
-@use 'layers';
 @use 'dark';
 @use 'components';
 @use 'utilities';

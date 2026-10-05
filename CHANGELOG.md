@@ -4,6 +4,27 @@ All notable changes to `@socifi/ui-theme` are documented here. Format is loosely
 
 ## [Unreleased]
 
+### Changed
+
+- Rebranded the shared Quasar theme to the violet Socifi dashboard design system, including its light and dark palettes, surfaces, typography, radii, and shadows.
+- Refined Quasar navigation, cards, buttons, fields, tables, dialogs, and status styling around the shared semantic tokens.
+- Removed corner rounding across Quasar components and app-level styles.
+- Moved Quasar component overrides into the unlayered cascade so they can override Quasar defaults without `!important`.
+- Redesigned Quasar form fields with consistent sizing, neutral surfaces, clearer labels, and a violet focus ring in light and dark themes.
+- Matched Quasar form fields to the Tailwind reference input: 44px height (h-11), 4px `--radius-field` corners, and a single 1px violet focus border under the soft focus ring.
+- Set the header to a frosted `bg-white/90` bar in light mode and `bg-slate-950/85` in dark mode (`backdrop-filter` blur), matching the design-system top bar.
+- Styled the default Quasar button as the design-system `secondary` variant (white surface, 1px slate border, slate text, soft shadow, violet hover) and removed the forced shadow from ghost/`flat` buttons.
+- Confined button elevation to the default (standard) button only: `flat`, `outline`, `unelevated` and `push` buttons — including the colored action buttons — are now completely flat, leaving only a whisper-thin 1px shadow on the default one.
+- Styled Quasar list rows (`q-item`) after the design-system nav item: `h-11` (44px), `px-3`, `gap-3`, `rounded-xl`, `text-sm font-medium`, slate-500 label with a slate-50 / slate-800 hover (slate-400 → slate-900 / white in dark), keeping the brand tint for the active route.
+- Gave list rows and buttons the design-system `rounded-xl` (4px) corners via a new `--radius-xl` token; cards and other surfaces stay square.
+- Normalized Quasar `q-gutter-*` spacing inside card sections to flex `gap`, so content stays within the card padding instead of overflowing and clipping against one edge.
+- Rebuilt the dark palette on a dedicated surface ramp (`--c-ink-*`) so dark mode no longer mixes the violet-grey palette with Tailwind slate values, and gave the shell three distinct planes: page, drawer ("well"), card, plus a raised step for dialogs.
+- Replaced the dark-mode solid grey borders with translucent white hairlines, so a single value stays correct on the page, on a card, and on a floating layer instead of needing a per-surface grey.
+- Added a dark-only depth layer: a 1px inner top highlight on every raised surface, deeper two-part shadows for floating elements, frosted glass on menus/tooltips/notifications, a dialog scrim, a soft brand bloom behind the page content, and an inset accent bar on the selected navigation row.
+- Gave filled primary buttons a brand halo in dark mode and a 1px lift on hover; they previously had no hover feedback at all.
+- Removed the dark-mode `[color="primary"]` button selectors, which could never match: `QBtn` consumes the `color` prop and renders `bg-primary text-white`, whose declarations are both `!important` in Quasar's stylesheet.
+- Fixed dark-mode contrast regressions: form placeholders, navigation labels, the primary brand text used on tinted rows, and the status labels (`text-negative` and friends) all cleared WCAG AA again.
+
 ## [1.0.0] - 2026-05-24
 
 Initial extraction from `notes-app`.

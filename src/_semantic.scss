@@ -16,50 +16,87 @@
   --color-primary:             var(--c-blue-500);
   --color-primary-hover:       var(--c-blue-600);
   --color-primary-active:      var(--c-blue-700);
-  --color-primary-soft:        var(--c-blue-100);
-  --color-primary-soft-strong: var(--c-blue-200);
+  --color-primary-focus:       #a78bfa;
+  --color-primary-soft:        var(--c-blue-50);
+  --color-primary-soft-strong: var(--c-blue-100);
   --color-primary-light:       var(--c-blue-50);
   --color-on-primary:          var(--c-gray-0);
   --color-primary-text:         var(--c-blue-600);
 
   /* --- Surfaces ---------------------------------------------------- */
   --color-surface:             var(--c-gray-0);     /* cards, popovers */
-  --color-surface-base:        var(--c-gray-100);   /* page background */
-  --color-surface-soft:        var(--c-blue-50);    /* subtle panels, drawer */
-  --color-surface-soft-strong: var(--c-blue-200);   /* drawer active item, card actions */
+  --color-surface-base:        var(--c-gray-50);    /* page background */
+  --color-surface-raised:      var(--c-gray-0);     /* dialogs, notifications: one step above --color-surface */
+  --color-surface-soft:        var(--c-gray-0);     /* subtle panels, drawer */
+  --color-surface-soft-strong: var(--c-blue-50);   /* drawer active item, card actions */
+  --color-header-surface:      rgba(255, 255, 255, 0.9); /* top bar: `bg-white/90` + blur, like the design system */
+  --color-field-surface:       #ffffff;
+  --color-field-border:        #e2e8f0;
+  --color-field-text:          #1e293b;
+  --color-field-placeholder:   #94a3b8;
+  --color-field-focus:         var(--color-primary-focus);
 
   /* --- Text -------------------------------------------------------- */
-  --color-text:                var(--c-blue-600);
+  --color-text:                var(--c-gray-900);
   --color-text-muted:          var(--c-gray-600);
   --color-text-on-brand:       var(--c-gray-0);
-  --color-text-link:           var(--c-blue-700);
+  --color-text-link:           var(--c-blue-600);
 
   /* --- Borders ----------------------------------------------------- */
   --color-border:              var(--c-gray-300);
-  --color-border-strong:       var(--c-blue-300);
-  --color-border-subtle:       var(--c-blue-200);
+  --color-border-strong:       var(--c-gray-200);
+  --color-border-subtle:       var(--c-gray-100);
+
+  /* --- Buttons: default/secondary variant (design-system `secondary`) --- */
+  --color-button-surface:       #ffffff;
+  --color-button-surface-hover: #f5f3ff; /* violet-50 */
+  --color-button-border:        #e2e8f0; /* slate-200 */
+  --color-button-border-hover:  #ddd6fe; /* violet-200 */
+  --color-button-text:          #334155; /* slate-700 */
+  /* box-shadow: offset-x offset-y blur spread color.
+     blur must NOT be negative — "1px 1px -1px" is invalid CSS and,
+     because it is read through var(), silently collapses to `none`.
+     A negative spread also pulls the shadow back under the button. */
+  --shadow-button:              0 1px 3px -1px rgba(25, 30, 55, 0.2);
+  /* Primary/colored action buttons: brand-tinted elevation, matching the
+     design-system `bg-brand-500 text-white shadow-[0_1px_4px_rgba(109,92,231,0.22)]`. */
+  --shadow-button-primary:      0 1px 2px 1px rgba(33, 19, 159, 0.25);
+
+  /* --- Navigation items (design-system nav: h-11, px-3, gap-3, rounded-xl) ---
+     flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium
+     text-slate-500 hover:bg-slate-50 hover:text-slate-800 */
+  --color-item-text:            #64748b; /* slate-500 */
+  --color-item-hover-bg:        #ffffff; /* slate-50 */
+  --color-item-hover-text:      #8667d9; /* slate-800 */
 
   /* --- Status ------------------------------------------------------ */
-  --color-success-fg:          var(--c-blue-500);
-  --color-success-bg:          rgba(66, 103, 178, 0.12);
+  --color-success-fg:          #23845e;
+  --color-success-bg:          #e9f7f0;
   --color-warning-fg:          var(--c-amber-800);
   --color-warning-bg:          rgba(242, 192, 55, 0.14);
   --color-danger-fg:           var(--c-red-500);
+  --color-danger-bg:           #fdecee;
+  --color-info-fg:              #347bb5;
+  --color-info-bg:              #eaf4fc;
+  --color-neutral-bg:           var(--c-gray-100);
 
   /* --- Shadows ----------------------------------------------------- */
-  --shadow-sm:                 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md:                 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-card-soft:          1px 3px 3px -1px rgba(0, 0, 0, 0.08);
+  --shadow-sm:                 1px 2px 4px rgba(25, 30, 55, 0.06);
+  --shadow-md:                 1px 2px 5px rgba(25, 30, 55, 0.08);
+  --shadow-card-soft:          1px 2px 2px rgba(30, 35, 70, 0.075);
+  --shadow-focus:              0 0 0 4px rgba(113, 99, 220, 0.10);
 
   /* --- Radii ------------------------------------------------------- */
-  --radius-sm:                 6px;
-  --radius-md:                 12px;
-  --radius-lg:                 16px;
-  --radius-pill:               999px;
+  --radius-sm:                 0;
+  --radius-md:                 0;
+  --radius-lg:                 0;
+  --radius-field:              4px; /* form controls: Tailwind `rounded-xl` (4px) */
+  --radius-xl:                 4px; /* buttons and list items: Tailwind `rounded-xl` (4px) */
+  --radius-pill:               0;
 
   /* --- Typography -------------------------------------------------- */
-  --font-family-base:          -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --font-size-base:            15px;
+  --font-family-base:          "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-size-base:            14px;
   --font-size-lg:              18px;
   --font-size-xl:              24px;
 }

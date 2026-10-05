@@ -7,44 +7,190 @@
 //
 // Strategy: keep primitives intact, just point semantic tokens at
 // different primitives. Component CSS doesn't need to know dark mode
-// exists.
+// exists (the one exception is the depth/glass block at the bottom of
+// _components.scss, which has no light-mode equivalent).
+//
+// Depth model — this is the whole reason the dark theme reads as layered
+// instead of flat. Light mode buys separation with shadows; on dark a
+// shadow is nearly invisible, so separation has to come from the surfaces
+// themselves:
+//
+//   1. four fill steps, each ~1.1:1 against its neighbour (roughly the
+//      spacing Radix uses for its dark scales);
+//   2. translucent hairline borders, so one rule reads correctly on every
+//      step instead of needing a hand-picked grey per surface;
+//   3. a 1px inner top highlight on every raised surface, which is what
+//      actually makes an edge legible at these contrast levels.
+//
+//   ink-1000  page      --color-surface-base
+//   ink-975   recessed  --color-field-surface
+//   ink-950   wells     --color-surface-soft   (drawer, table row hover)
+//   ink-900   cards     --color-surface
+//   ink-850   raised    --color-surface-soft-strong (popovers, buttons)
 // =====================================================================
 
 body.body--dark {
+  /* Every colour below comes from the theme's own primitives. No Tailwind
+     slate values: mixing two neutral ramps (violet-grey + slate) is what
+     made the dark theme look muddy next to the light one. */
+
   /* --- Brand: lift the blue for contrast on dark surfaces ---------- */
   --color-primary:             var(--c-blue-400);
   --color-primary-hover:       var(--c-blue-300);
   --color-primary-active:      var(--c-blue-200);
-  --color-primary-soft:        rgba(66, 103, 178, 0.18);
-  --color-primary-soft-strong: rgba(66, 103, 178, 0.32);
-  --color-on-primary:          var(--c-gray-900);
+  --color-primary-focus:       var(--c-blue-300);
+  --color-primary-soft:        rgba(147, 132, 242, 0.12);
+  --color-primary-soft-strong: rgba(147, 132, 242, 0.20);
+  /* Light mode uses solid blue-50 here; on dark that paints an almost-white
+     block, so the same "wash" role is expressed as alpha instead. */
+  --color-primary-light:       rgba(147, 132, 242, 0.08);
+  --color-on-primary:          var(--c-gray-1000);
+  /* Light mode uses blue-600 for brand *text*. On dark surfaces that only
+     reaches 2.95:1 (WCAG AA needs 4.5:1) — it must be lightened. blue-300
+     gives 8.7:1 on a card and 7.3:1 on a brand-tinted active row. */
+  --color-primary-text:        var(--c-blue-300);
 
-  /* --- Surfaces flip ---------------------------------------------- */
-  --color-surface:             var(--c-gray-800);
-  --color-surface-base:        var(--c-gray-1000);
-  --color-surface-soft:        var(--c-gray-700);
-  --color-surface-soft-strong: var(--c-gray-600);
+  /* --- Surfaces: the ladder documented at the top of the file ---- */
+  --color-surface:             var(--c-ink-900);  /* cards            */
+  --color-surface-base:        var(--c-ink-1000); /* page background  */
+  --color-surface-raised:      var(--c-ink-850);  /* dialogs          */
+  --color-surface-soft:        var(--c-ink-950);  /* wells: drawer    */
+  --color-surface-soft-strong: var(--c-ink-850);  /* raised panels    */
+  /* Top bar: same trick as light mode (`bg-white/90` + blur), but a dark
+     value needs less alpha or the blur stops reading as glass at all. */
+  /* 0.88 rather than 0.72: the page carries a soft brand bloom right under
+     the top bar, and at 0.72 the blurred bloom bled through and lit up the
+     header's bottom edge. Nearly-opaque keeps the frosted look without
+     giving the glow something to shine through. */
+  --color-header-surface:      rgba(10, 11, 18, 0.88);
+  --color-field-surface:       var(--c-ink-975);  /* recessed, not raised */
+  --color-field-border:        rgba(185, 175, 255, 0.18);
+  --color-field-text:          #f1f5f9;
+  /* gray-500 only reached 4.1:1 on a raised surface (dialogs and popovers
+     contain fields too), so the placeholder shares the muted text tone. */
+  --color-field-placeholder:   var(--c-gray-400);
+  --color-field-focus:         var(--color-primary-focus);
 
   /* --- Text flips ------------------------------------------------- */
-  --color-text:                var(--c-gray-50);
+  --color-text:                #f1f2f8;
   --color-text-muted:          var(--c-gray-400);
-  --color-text-on-brand:       var(--c-gray-900);
+  --color-text-on-brand:       var(--c-gray-1000);
   --color-text-link:           var(--c-blue-300);
 
-  /* --- Borders ---------------------------------------------------- */
-  --color-border:              var(--c-gray-700);
-  --color-border-strong:       var(--c-blue-400);
-  --color-border-subtle:       var(--c-gray-700);
+  /* --- Borders: brand-tinted hairlines ---------------------------- *
+   * Still translucent, for the same reason as before: one value has to
+   * stay correct on the page, in a well and on a card. But the tint is
+   * now the brand violet instead of pure white. Two things that fixes:
+   *
+   *   1. A white line at the alpha it takes to stay legible reads as a
+   *      drawn grey outline, and it gets *bright* — Quasar's own dark
+   *      chrome border is white at 0.28, which was visibly the brightest
+   *      element on the screen ("the top bar is glowing").
+   *   2. A violet line looks like part of the palette rather than like a
+   *      neutral fighting it.
+   *
+   * Rendered on the surfaces above (WCAG ratio against what is behind):
+   *   subtle 0.11 -> 1.19 .. 1.26   chrome seams, dividers
+   *   base   0.16 -> 1.35 .. 1.42   default outline
+   *   strong 0.22 -> 1.55 .. 1.62   cards, floating layers
+   *
+   * `--color-border` is unused by components today but is kept in sync so
+   * the three tokens stay a coherent ramp.
+   * --------------------------------------------------------------- */
+  --color-border:              rgba(185, 175, 255, 0.16);
+  --color-border-strong:       rgba(185, 175, 255, 0.22);
+  --color-border-subtle:       rgba(185, 175, 255, 0.11);
+
+  /* --- Buttons: default/secondary variant ------------------------- */
+  /* Light mode keeps the button a step away from the page; on dark that
+     means *lighter* than --color-surface, not darker. */
+  --color-button-surface:       var(--c-ink-850);
+  --color-button-surface-hover: var(--color-primary-soft);
+  --color-button-border:        rgba(185, 175, 255, 0.22);
+  --color-button-border-hover:  var(--c-blue-400);
+  --color-button-text:          var(--c-gray-100);
+  --shadow-button:              0 2px 0 -1px rgba(0, 0, 0, 0.45);
+  --shadow-button-primary:      0 2px 6px rgba(0, 0, 0, 0.45),
+                                0 0 0 1px rgba(255, 255, 255, 0.10) inset;
+
+  /* --- Navigation items ------------------------------------------- */
+  /* slate-900 sat at the same luminance as the drawer, so hovering a row
+     produced no visible change at all (1.00:1). The drawer is now a well
+     (ink-950) and the hover fill is one step up in the same ramp. */
+  --color-item-text:            var(--c-gray-400);
+  --color-item-hover-bg:        var(--c-ink-850);
+  --color-item-hover-text:      var(--c-gray-100);
 
   /* --- Status: lighter fg, dimmer bg ------------------------------ */
-  --color-success-fg:          var(--c-blue-300);
-  --color-success-bg:          rgba(66, 103, 178, 0.22);
+  --color-success-fg:          #70d3a7;
+  --color-success-bg:          rgba(67, 166, 129, 0.14);
   --color-warning-fg:          var(--c-amber-500);
   --color-warning-bg:          rgba(242, 192, 55, 0.18);
-  --color-danger-fg:           var(--c-red-500);
+  --color-danger-fg:           #ff8291;
+  --color-danger-bg:           rgba(255, 130, 145, 0.12);
+  --color-info-fg:              #83bff0;
+  --color-info-bg:              rgba(83, 152, 214, 0.14);
+  --color-neutral-bg:           var(--c-ink-800);
 
-  /* --- Shadows: deeper, softer ------------------------------------ */
+  /* --- Elevation & glass ------------------------------------------ *
+   * Elevation on dark is carried by the surface ladder, the hairlines and
+   * the top highlight below; shadows only matter for things that actually
+   * float over the layout. They are therefore much heavier than the light
+   * theme values: a soft, low-alpha shadow that works on white reads as
+   * nothing at all on a #0a0b10 page, so these are wide and dark instead.
+   * --------------------------------------------------------------- */
   --shadow-sm:                 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md:                 0 4px 14px rgba(0, 0, 0, 0.45);
-  --shadow-card-soft:          1px 3px 3px -1px rgba(0, 0, 0, 0.30);
+  /* Cards only need enough shadow to separate them from the page fill. */
+  --shadow-card-soft:          0 1px 2px rgba(0, 0, 0, 0.40);
+
+  /* Floating layers: menus, dialogs, tooltips, notifications. Two stacked
+     shadows — a tight contact shadow plus a wide ambient one — which is
+     what stops a 20px blur from looking like a grey smear. */
+  --shadow-float:              0 4px 10px -4px rgba(0, 0, 0, 0.55),
+                               0 20px 44px -12px rgba(0, 0, 0, 0.70);
+
+  /* 1px inner top highlight. This is the "lit edge" that makes a raised
+     surface read as raised at these contrast levels. */
+  --surface-highlight:         inset 0 1px 0 rgba(255, 255, 255, 0.055);
+
+  /* Focus ring: at 10% alpha it is invisible on a dark page. It surrounds a
+     violet border, so it has to read as a halo rather than as a shadow. */
+  --shadow-focus:              0 0 0 4px rgba(147, 132, 242, 0.30);
+
+  /* Brand glow for the primary action: a hairline inner highlight (so the
+     fill reads as a lit capsule rather than a flat block) plus a hard,
+     tight violet halo. Kept deliberately tight — a wide soft glow reads as
+     a smudge, not as emission. */
+  --shadow-glow-primary:       0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+                               0 6px 16px -6px rgba(114, 99, 223, 0.85);
+  --shadow-glow-hover:         0 0 0 1px rgba(255, 255, 255, 0.22) inset,
+                               0 8px 22px -6px rgba(129, 113, 246, 0.95);
+
+  /* Glass: floating layers keep the page visible underneath. The fill is
+     the raised step at 0.80 opacity — enough blur shows through to read as
+     glass, while text on top still clears 4.5:1 even if the menu happens to
+     float over a light element. */
+  --glass-surface:             rgba(38, 43, 66, 0.80);
+  --glass-blur:                saturate(135%) blur(20px);
+  --scrim:                     rgba(6, 7, 12, 0.60);
 }
+
+/* =====================================================================
+ * Quasar bridge: status labels.
+ *
+ * Quasar stores its palette as `var(--q-*)` and app code legitimately uses
+ * the semantic classes (`color="negative"` on a flat button, `text-negative`
+ * on a label). The catch is that Quasar has ONE variable per status, used
+ * both as a *fill* (`bg-negative` on a toast, under white text) and as a
+ * *label* colour — and a mid-tone red that can carry white text cannot also
+ * be readable as text on a dark surface.
+ *
+ * So the variables are left alone and only the label classes are re-pointed.
+ * Specificity (`body.body--dark .text-*` = 0,2,1) beats Quasar's own
+ * `.text-*` rule, and both are `!important`, so this wins on order.
+ * ===================================================================== */
+body.body--dark .text-negative { color: var(--color-danger-fg)  !important; }
+body.body--dark .text-positive { color: var(--color-success-fg) !important; }
+body.body--dark .text-warning  { color: var(--color-warning-fg) !important; }
+body.body--dark .text-info     { color: var(--color-info-fg)    !important; }

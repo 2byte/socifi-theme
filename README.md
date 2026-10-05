@@ -85,6 +85,7 @@ Available as both Sass variables (`$palette-blue-500`) and CSS variables (`--c-b
 | `blue-50` … `blue-900` | brand |
 | `gray-0` … `gray-1000` | neutral |
 | `green-500`, `amber-500`, `amber-800`, `red-500`, `cyan-500`, `purple-500` | status |
+| `ink-1000` … `ink-700` | dark-theme surface ramp — not a general neutral scale, see [Dark theme](#dark-theme) |
 
 ### Semantic tokens
 
@@ -97,9 +98,12 @@ These are what components consume.
 | `--color-primary-active` | active/pressed state |
 | `--color-primary-soft` | subtle brand tint (badges, fills) |
 | `--color-primary-soft-strong` | stronger brand tint (active items, card actions) |
+| `--color-primary-light` | faintest brand wash |
+| `--color-primary-text` | brand used as text (lightened in dark for contrast) |
 | `--color-on-primary` | text color on brand surfaces |
 | `--color-surface` | card / popover background |
 | `--color-surface-base` | page background |
+| `--color-surface-raised` | dialogs and notifications (one step above `--color-surface`) |
 | `--color-surface-soft` | subtle panel background (drawer, sections) |
 | `--color-surface-soft-strong` | drawer active item, card actions |
 | `--color-text` | default body text |
@@ -109,12 +113,47 @@ These are what components consume.
 | `--color-border` | default border |
 | `--color-border-strong` | emphasized borders (cards, fields) |
 | `--color-border-subtle` | dividers within soft surfaces |
+| `--color-button-surface` / `--color-button-surface-hover` | default/secondary button background and its hover |
+| `--color-button-border` / `--color-button-border-hover` | default/secondary button border and its hover |
+| `--color-button-text` | default/secondary button label |
+| `--shadow-button` | elevation of the default button only (flat / outline / unelevated are never elevated) |
+| `--color-item-text` | navigation / list row label |
+| `--color-item-hover-bg` / `--color-item-hover-text` | navigation / list row hover surface and label |
 | `--color-success-fg` / `--color-success-bg` | success status |
 | `--color-warning-fg` / `--color-warning-bg` | warning status |
-| `--color-danger-fg` | error status |
-| `--shadow-sm`, `--shadow-md`, `--shadow-card-soft` | elevation |
-| `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-pill` | corners |
+| `--color-danger-fg` / `--color-danger-bg` | error status |
+| `--shadow-sm`, `--shadow-md`, `--shadow-card-soft`, `--shadow-focus` | elevation and keyboard focus |
+| `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl`, `--radius-field`, `--radius-pill` | corners |
 | `--font-family-base`, `--font-size-base`, `--font-size-lg`, `--font-size-xl` | type |
+
+### Dark theme
+
+Light mode buys separation with shadows. On a near-black page a soft, low-alpha shadow is invisible, so the dark theme rebuilds elevation out of the surfaces themselves, in three moves:
+
+1. **Fills.** Four steps, each ~1.1:1 against its neighbour — the spacing Radix uses for its dark scales. The dark-only `--c-ink-*` ramp exists for exactly these steps.
+
+   | Step | Token | Used by |
+   |---|---|---|
+   | `ink-1000` | `--color-surface-base` | page |
+   | `ink-975` | `--color-field-surface` | form controls (recessed) |
+   | `ink-950` | `--color-surface-soft` | drawer, wells |
+   | `ink-900` | `--color-surface` | cards |
+   | `ink-850` | `--color-surface-raised`, `--color-surface-soft-strong` | dialogs, popovers, buttons |
+
+2. **Edges.** Dark-mode borders are translucent white hairlines, so one value stays correct on every step instead of needing a hand-picked grey per surface. Every raised surface also carries a 1px inner top highlight (`--surface-highlight`) — at 1.1:1 fill steps it is the *edge*, not the fill, that makes a surface legible.
+
+3. **Float.** Menus, tooltips and notifications are frosted glass (`--glass-surface`, `--glass-blur`); dialogs sit on `--color-surface-raised` behind a `--scrim`.
+
+Dark-only helper tokens, defined on `body.body--dark` and safe to override per app:
+
+| Token | Role |
+|---|---|
+| `--surface-highlight` | 1px inner top highlight for raised surfaces |
+| `--shadow-float` | menus, dialogs, tooltips, notifications |
+| `--shadow-glow-primary`, `--shadow-glow-hover` | brand halo on filled primary buttons |
+| `--glass-surface`, `--glass-blur`, `--scrim` | floating-layer glass and dialog backdrop |
+
+The dark theme is deliberately asymmetric in one place: `--color-primary` is the *accent* violet (borders, focus rings, icons, labels), while filled `.bg-primary` surfaces keep Quasar's `--q-primary`. Accent violet is light enough that white text on it falls to 3.1:1, so it must never be used as a fill underneath white text.
 
 ### Utility classes
 
@@ -125,7 +164,10 @@ These are what components consume.
 | `.text-primary` | text color = `--color-primary` |
 | `.bg-primary-soft` | background = `--color-primary-soft` |
 | `.bg-surface` | background = `--color-surface` |
+| `.text-danger` | text color = `--color-danger-fg` |
+| `.bg-danger-soft` | background = `--color-danger-bg` |
 | `.full-width` | width: 100% |
+| `.field-compact` | Quasar field sized to 36px high × 80px wide |
 
 ## Per-app overrides
 
@@ -153,21 +195,11 @@ If the same override appears in 3+ apps, that's a signal to add it to this packa
 
 Components reference semantic tokens only. Rebrand = edit `_semantic.scss`. Dark mode = re-point semantic tokens on `body--dark` (see `_dark.scss`). Components don't move.
 
-### Why `@layer` AND a `body` selector prefix
+### Quasar component overrides
 
-Quasar's own CSS is **unlayered**. Per CSS spec, unlayered rules win over any layered rule, so wrapping our styles in `@layer` alone cannot beat Quasar's defaults.
+Quasar's own CSS is unlayered. The theme keeps component overrides unlayered too, then uses a `body` selector prefix where extra specificity is needed. This lets rules such as the global `q-item` color override Quasar defaults without `!important`.
 
-We use `@layer` to order our **own** rules between themselves (`components` < `utilities`), and we boost specificity with a `body` selector prefix to beat Quasar (specificity 0,1,1 > 0,1,0). Together this eliminates the need for `!important`.
-
-If a future Quasar release ships layered CSS, the `body` prefix can be dropped.
-
-### Cascade layer order
-
-```
-@layer components, utilities;
-```
-
-`utilities` is declared last, so utility classes always win over component styles when both apply.
+Utilities load after component styles, so they can take precedence when both selectors have comparable specificity.
 
 ## Contributing
 
