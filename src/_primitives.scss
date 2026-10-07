@@ -51,6 +51,32 @@
   --c-ink-800:  #323855; /* hover fills       L* 24.2 */
   --c-ink-700:  #414968; /* strong fills      L* 30.7 */
 
+  /* Indigo surface ramp — the oilier, more saturated alternative to
+     --c-ink-* used by the `nocturne` skin. Same contract as the ink ramp
+     (each step >= 3 L* apart, page -> card ~9.7 L*) so both skins layer
+     identically and every component rule keeps working; only the hue and
+     chroma change, from near-neutral to a deep blue-violet.
+     Hue is pinned to ~241.5deg — the hue the reference backgrounds use —
+     and saturation eases off as the ramp brightens (68% -> 44%). Holding
+     saturation constant instead turns the top of the ramp chalky. */
+  --c-indigo-1000: #0a0931; /* page              L*  4.4 */
+  --c-indigo-975:  #100e43; /* recessed controls L*  7.5 */
+  --c-indigo-950:  #151450; /* wells             L* 10.8 */
+  --c-indigo-900:  #1b195e; /* cards             L* 14.0 */
+  --c-indigo-850:  #212069; /* raised surfaces   L* 17.3 */
+  --c-indigo-800:  #292775; /* hover fills       L* 20.9 */
+  --c-indigo-700:  #343281; /* strong fills      L* 25.6 */
+
+  /* Periwinkle accent ramp — the brand for the `nocturne` skin. Much
+     lighter than the violet brand (L* 76.5 vs 60.9), which is the point: on
+     a deep indigo page a mid-tone violet fill reads as a bruise, while a
+     pale periwinkle reads as light coming off the surface. The trade-off
+     is that these are only usable as *fills under dark ink* — white on
+     `--c-periwinkle-300` is 1.88:1 and must never happen. */
+  --c-periwinkle-200: #d6ddff; /* lifted fills        L* 88.6 */
+  --c-periwinkle-300: #a9baff; /* accent, fills       L* 76.5 */
+  --c-periwinkle-400: #8ba3ff; /* deep accent, borders L* 68.7 */
+
   --c-green-500:  #{$palette-green-500};
   --c-amber-500:  #{$palette-amber-500};
   --c-amber-800:  #{$palette-amber-800};

@@ -174,6 +174,20 @@ body.body--dark {
   --glass-surface:             rgba(38, 43, 66, 0.80);
   --glass-blur:                saturate(135%) blur(20px);
   --scrim:                     rgba(6, 7, 12, 0.60);
+
+  /* Page glow: one soft brand bloom anchored to the top of the content area
+     — the cheapest way to stop a large dark page from reading as flat black.
+     It is a background-image rather than a fixed vignette so it scrolls away
+     with the content. Pulled up and dimmed from `50% -12% / 0.09`: at that
+     strength its lower half sat directly under the fixed top bar and read as
+     the bar emitting light rather than as page depth.
+     Exposed as a token because it is the one place a skin may want a
+     different *quantity* of light, not just a different hue. */
+  --page-glow:                 radial-gradient(
+                                 1200px 420px at 50% -22%,
+                                 rgba(114, 99, 223, 0.07),
+                                 transparent 70%
+                               );
 }
 
 /* =====================================================================

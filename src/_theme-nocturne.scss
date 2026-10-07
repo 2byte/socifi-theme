@@ -1,0 +1,592 @@
+// =====================================================================
+// NOCTURNE — a second dark skin, opt in with `data-theme="nocturne"`.
+//
+// Activation: `body.body--dark` AND `data-theme="nocturne"` on <body>
+// (the app's theme store writes both). Nocturne is not a third light/dark
+// scheme — it is a *skin of the dark theme*, so it inherits the entire
+// depth model from _dark.scss and only re-points the tokens that carry
+// colour:
+//
+//   depth model   fills ladder, hairline edges, inner top highlight,
+//                 glass, scrim, page glow, floating shadows
+//                 -> inherited unchanged from _dark.scss
+//   colour        hue of every surface, the brand, text temperature
+//                 -> re-pointed here, onto the indigo + periwinkle ramp
+//
+// Why a skin at all: the default dark theme is deliberately neutral so it
+// sits quietly next to the violet-grey light theme. Nocturne makes the
+// opposite trade — a saturated blue-violet page with a pale accent — and
+// that only works if the *whole* ladder moves with it. Swapping just the
+// page fill would leave grey cards floating on an indigo background.
+//
+// Two invariants this file has to keep:
+//
+//   1. Every step of the indigo ladder is >= 3 L* from its neighbour and
+//      page -> card is ~9.7 L*, exactly like the ink ramp it replaces. The
+//      component rules in _components.scss assume those gaps, so a skin
+//      that compressed them would lose the layering without any rule
+//      changing.
+//   2. The periwinkle brand is LIGHT (L* 76.5). It is therefore only ever a
+//      fill under dark ink, never under white — white on it is 1.88:1. The
+//      Quasar bridge at the bottom of this file enforces that for
+//      `bg-primary`, which Quasar would otherwise label white.
+// =====================================================================
+
+body.body--dark[data-theme='nocturne'] {
+  // --- Brand: periwinkle in place of violet -------------------------
+  // Interaction moves *lighter* (300 -> 200), matching the default dark
+  // theme's direction rather than the light theme's. On a pale accent a
+  // darker hover reads as a jump to a different colour; a lighter one
+  // reads as the surface catching more light, which is what a dark UI
+  // wants.
+  --color-primary:             var(--c-periwinkle-300);
+  --color-primary-hover:       var(--c-periwinkle-200);
+  --color-primary-active:      var(--c-periwinkle-400);
+  --color-primary-focus:       var(--c-periwinkle-300);
+  // Alpha washes instead of solid tints, for the same reason as the
+  // default dark theme: a solid light tint paints a near-white block on a
+  // dark page. 0.14 is a shade stronger than the default theme's 0.12
+  // because the indigo wells these sit on are lighter than the ink ones,
+  // so the same alpha would read weaker.
+  --color-primary-soft:        rgba(169, 186, 255, 0.14);
+  --color-primary-soft-strong: rgba(169, 186, 255, 0.22);
+  --color-primary-light:       rgba(169, 186, 255, 0.08);
+  --color-on-primary:          var(--c-indigo-1000);
+  // Brand as text: 10.2:1 on the page, 8.3:1 on a card — the accent is
+  // light enough to be used for labels at full strength here.
+  --color-primary-text:        var(--c-periwinkle-300);
+
+  // --- Surfaces: the indigo ladder ----------------------------------
+  // Same roles, same order, same gaps as the ink ladder in _dark.scss.
+  // The names are deliberately parallel so the two files can be diffed.
+  --color-surface:             var(--c-indigo-900);  // cards
+  --color-surface-base:        var(--c-indigo-1000); // page background
+  --color-surface-raised:      var(--c-indigo-850);  // dialogs
+  --color-surface-soft:        var(--c-indigo-950);  // wells: drawer
+  --color-surface-soft-strong: var(--c-indigo-850);  // raised panels
+
+  // Top bar: the page colour at 0.88, same recipe and same alpha as the
+  // default dark theme. The alpha has to stay this high — the page carries
+  // a bloom right underneath the bar, and anything more transparent lets
+  // the blur smear it along the bar's bottom edge.
+  --color-header-surface:      rgba(10, 9, 49, 0.88);
+  --color-field-surface:       var(--c-indigo-975);  // recessed, not raised
+  --color-field-border:        rgba(163, 177, 255, 0.20);
+  --color-field-text:          #eaeeff;
+  --color-field-placeholder:   #a7afde;
+  --color-field-focus:         var(--color-primary-focus);
+
+  // --- Text: tinted blue, not grey ----------------------------------
+  // This is most of what separates Nocturne from a plain "blue background"
+  // reskin. A neutral grey on an indigo page reads as dusty; pulling the
+  // text a few degrees toward the surface hue makes the page feel lit
+  // rather than painted.
+  //
+  // Contrast of these tokens against every surface (WCAG ratio):
+  //
+  //            text  muted  brand
+  //   page    16.58   8.97  10.17
+  //   field   15.59   8.43   9.57
+  //   well    14.56   7.88   8.94
+  //   card    13.49   7.30   8.28
+  //   raised  12.32   6.66   7.56
+  //   fill    11.07   5.99   6.80
+  //
+  // Every combination clears AA (4.5:1), including muted text on the hover
+  // fill. Muted text is what sets `#a7afde`: it is the lightest value that
+  // fails nothing, and darkening it further would erase the
+  // muted/secondary hierarchy at the top of the ladder.
+  --color-text:                #eaeeff;
+  --color-text-muted:          #a7afde;
+  --color-text-on-brand:       var(--c-indigo-1000);
+  --color-text-link:           var(--c-periwinkle-300);
+
+  // --- Borders: periwinkle hairlines --------------------------------
+  // Translucent for the same reason as the default dark theme — one value
+  // has to stay correct on the page, in a well and on a card — but tinted
+  // periwinkle instead of violet. The alphas were solved so the rendered
+  // line lands on the same contrast steps the ink theme uses:
+  //
+  //   subtle 0.12 -> 1.21 .. 1.26   chrome seams, dividers
+  //   base   0.18 -> 1.37 .. 1.43   default outline
+  //   strong 0.24 -> 1.58 .. 1.64   cards, floating layers
+  //
+  // These sit *higher* than the ink theme's 0.11/0.16/0.22: the same alpha
+  // on a lighter, more saturated surface produces a weaker line, so
+  // matching the ink theme numerically needs more of it.
+  --color-border:              rgba(163, 177, 255, 0.18);
+  --color-border-strong:       rgba(163, 177, 255, 0.24);
+  --color-border-subtle:       rgba(163, 177, 255, 0.12);
+
+  // --- Buttons: default/secondary variant ---------------------------
+  --color-button-surface:       var(--c-indigo-850);
+  --color-button-surface-hover: var(--color-primary-soft);
+  --color-button-border:        rgba(163, 177, 255, 0.24);
+  --color-button-border-hover:  var(--c-periwinkle-300);
+  --color-button-text:          #eaeeff;
+  --shadow-button:              0 2px 0 -1px rgba(3, 3, 16, 0.50);
+  --shadow-button-primary:      0 2px 8px rgba(3, 3, 16, 0.55),
+                                0 0 0 1px rgba(255, 255, 255, 0.14) inset;
+
+  // --- Navigation items ---------------------------------------------
+  --color-item-text:            #a7afde;
+  --color-item-hover-bg:        var(--c-indigo-850);
+  --color-item-hover-text:      #eaeeff;
+
+  // --- Status -------------------------------------------------------
+  // The foregrounds are the default dark theme's values, which already
+  // clear AA on the indigo ladder (success 8.6:1 on a card, danger 6.6:1).
+  // They are repeated rather than inherited so each skin stays readable on
+  // its own, and because the status *tints* had to be rechecked against
+  // indigo surfaces.
+  --color-success-fg:          #70d3a7;
+  --color-success-bg:          rgba(67, 166, 129, 0.14);
+  --color-warning-fg:          var(--c-amber-500);
+  --color-warning-bg:          rgba(242, 192, 55, 0.18);
+  --color-danger-fg:           #ff8291;
+  --color-danger-bg:           rgba(255, 130, 145, 0.12);
+  --color-info-fg:             #83bff0;
+  --color-info-bg:             rgba(83, 152, 214, 0.14);
+  --color-neutral-bg:          var(--c-indigo-800);
+
+  // --- Elevation & glass --------------------------------------------
+  // Shadows are lifted from near-black to a blue-black. On an indigo page
+  // a neutral black shadow reads as a dirty smudge, because the eye
+  // compares it against the surface it falls on.
+  --shadow-sm:                 0 1px 2px rgba(3, 3, 16, 0.40);
+  --shadow-md:                 0 4px 14px rgba(3, 3, 16, 0.50);
+  --shadow-card-soft:          0 1px 2px rgba(3, 3, 16, 0.45);
+  --shadow-float:              0 4px 10px -4px rgba(3, 3, 16, 0.60),
+                               0 20px 44px -12px rgba(3, 3, 16, 0.75);
+
+  // The inner top highlight is tinted too. Left white it would be the one
+  // neutral element on the page, and at this size that is enough to read
+  // as a grey seam.
+  --surface-highlight:         inset 0 1px 0 rgba(198, 208, 255, 0.07);
+  --shadow-focus:              0 0 0 4px rgba(169, 186, 255, 0.30);
+
+  // Brand halo on filled primary buttons. Weaker than the ink theme's
+  // 0.85/0.95: the periwinkle fill is already the brightest thing on the
+  // page, so a full-strength halo around it just blooms.
+  --shadow-glow-primary:       0 0 0 1px rgba(255, 255, 255, 0.20) inset,
+                               0 6px 16px -6px rgba(169, 186, 255, 0.55);
+  --shadow-glow-hover:         0 0 0 1px rgba(255, 255, 255, 0.26) inset,
+                               0 8px 22px -6px rgba(169, 186, 255, 0.70);
+
+  // Glass fill is the raised indigo step at 0.80, matching the ink theme's
+  // recipe. The blur saturation is nudged up to 140%: the colour under the
+  // glass is more chromatic than the ink theme's, and without the extra
+  // saturation the frosted layer reads as a flat panel.
+  --glass-surface:             rgba(33, 32, 105, 0.80);
+  --glass-blur:                saturate(140%) blur(20px);
+  --scrim:                     rgba(4, 4, 22, 0.62);
+
+  // --- Page glow ----------------------------------------------------
+  // Two blooms instead of the ink theme's one. A single top-centred bloom
+  // is all the ink page needs, because its job is only to stop the page
+  // reading as flat black; on an indigo page the bloom is part of the
+  // identity, so it also gets a cool counter-bloom in the bottom corner.
+  // That corner is deliberate: it lands under the end of the note feed, so
+  // the page has a second light source without either edge becoming the
+  // brightest thing on screen.
+  --page-glow:                 radial-gradient(
+                                 1000px 640px at 80% -4%,
+                                 rgba(126, 116, 255, 0.14),
+                                 transparent 62%
+                               ),
+                               radial-gradient(
+                                 760px 560px at 6% 26%,
+                                 rgba(92, 140, 255, 0.10),
+                                 transparent 62%
+                               ),
+                               radial-gradient(
+                                 900px 700px at 94% 58%,
+                                 rgba(120, 100, 255, 0.08),
+                                 transparent 60%
+                               ),
+                               linear-gradient(
+                                 180deg,
+                                 #34327b 0%,
+                                 #232066 16%,
+                                 #171553 40%,
+                                 #0d0c35 70%,
+                                 #0a0930 100%
+                               );
+}
+
+// =====================================================================
+// Quasar bridge: the brand palette.
+//
+// Quasar keeps its palette in `--q-*` and does NOT swap it for dark mode —
+// `--q-primary` stays `$primary` (the violet) in both schemes. That was
+// fine while the dark theme used `--color-primary` only for borders, focus
+// rings and labels, but a periwinkle *brand* has to reach the fills too, so
+// the variable is re-pointed. Everything Quasar colours from `primary`
+// follows: `bg-primary` fills, `text-primary` labels, checked toggles and
+// checkboxes, slider thumbs, progress bars.
+// =====================================================================
+body.body--dark[data-theme='nocturne'] {
+  --q-primary: var(--c-periwinkle-300);
+}
+
+// =====================================================================
+// Quasar bridge: filled brand surfaces carry DARK ink.
+//
+// QBtn renders a coloured button as `bg-primary text-white`, and both of
+// those classes are `!important` in Quasar's stylesheet — so the label
+// cannot be fixed by re-pointing a variable. That is why the default dark
+// theme leaves filled buttons on `--q-primary` (a mid violet that can carry
+// white text) and keeps the pale accent for outlines and labels only.
+//
+// Nocturne deliberately breaks that split: the brand *is* pale, so white
+// would land at 1.88:1. Repeating the activation attributes puts this
+// selector at (0,4,1) against `.text-white`'s (0,1,0), which wins even
+// though both declarations are `!important`.
+//
+// It is written against `.bg-primary` rather than `.bg-primary.text-white`
+// so it also covers everything else Quasar fills with the brand — chips,
+// avatars, badges, active toggle segments — because with a pale brand the
+// correct label colour is always the dark ink.
+// =====================================================================
+body.body--dark[data-theme='nocturne'] .bg-primary {
+  color: var(--c-indigo-1000) !important;
+}
+
+// =====================================================================
+// Backdrop hand-off.
+//
+// Nocturne paints its page on a fixed layer *behind* the app rather than on
+// the page itself, which is what leaves room for a canvas to draw between the
+// fill and the content (the app's `Starfield.vue` renders that layer). Three
+// boxes have to give up their fill for the layer to be visible, and each one
+// is here for a different reason:
+//
+//   #q-app     paints the page fill (see _components.scss). An in-flow
+//              background always wins against a negative-z-index sibling, so
+//              the layer would sit behind it no matter what it draws.
+//   .q-page    the same fill one level down, and it is `position: relative`
+//              with `z-index: auto` — that paints *above* the layer, so it
+//              would be clipped by its own surface.
+//   body       takes the fill instead, so the page still renders correctly if
+//              an app loads the skin without any backdrop at all. It paints
+//              as the canvas background, which is the one plane below the
+//              layer, and it doubles as the over-scroll colour.
+//
+// The glow moves with the layer for the same reason: a fixed gradient needs a
+// fixed box, and on the document it would scroll and stretch with the content.
+//
+// The `#q-app .q-page` prefix is not decoration — it has to outrank the
+// `body.body--dark .q-page` rule in _components.scss, and that rule is loaded
+// *after* this file, so a class-for-class match would lose on order.
+// =====================================================================
+body.body--dark[data-theme='nocturne'] {
+  background-color: var(--color-surface-base);
+}
+
+body.body--dark[data-theme='nocturne'] #q-app,
+body.body--dark[data-theme='nocturne'] #q-app .q-page {
+  background-color: transparent;
+  background-image: none;
+}
+
+// =====================================================================
+// Remio-style glass cards.
+//
+// The reference page has no solid card fill at all: a card is a 0.08 wash
+// of periwinkle with a 1.5px hairline, so the starfield and the page
+// gradient read through it. Only in-flow content cards go glass — dialogs,
+// menus and tooltips keep their own (more opaque) fills from _dark.scss so
+// text over them never depends on what happens to be behind.
+// =====================================================================
+body.body--dark[data-theme='nocturne'] {
+  --glass-card:        rgba(126, 142, 255, 0.08);
+  --glass-card-hover:  rgba(126, 142, 255, 0.14);
+  --color-border:        rgba(163, 177, 255, 0.22);
+  --color-border-strong: rgba(163, 177, 255, 0.32);
+  --color-border-subtle: rgba(163, 177, 255, 0.14);
+  --color-text:          #ffffff;
+  --color-text-muted:    rgba(206, 212, 246, 0.62);
+}
+
+body.body--dark[data-theme='nocturne'] {
+  .q-card:not(.q-dialog__inner > .q-card),
+  .note-card,
+  .notes-feed__card,
+  .auth-card,
+  .q-table__card,
+  .stats-card {
+    background: var(--glass-card);
+    border: 1.5px solid var(--color-border);
+    border-radius: 24px;
+    backdrop-filter: blur(6px);
+    box-shadow: none !important;
+    transition: transform 0.4s cubic-bezier(0.34, 1.45, 0.5, 1),
+                border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  }
+
+  .notes-feed__card {
+    padding: 28px 26px;
+  }
+
+  .notes-feed__tag {
+    background: rgba(126, 142, 255, 0.14);
+    color: var(--color-primary-text);
+  }
+
+  .notes-feed__skeleton {
+    background: var(--glass-card);
+    border-radius: 24px;
+  }
+
+  .note-card:hover,
+  .notes-feed__card:hover,
+  .stats-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(163, 177, 255, 0.55);
+    background: var(--glass-card-hover);
+    box-shadow: 0 24px 60px -20px rgba(96, 110, 255, 0.4) !important;
+  }
+}
+
+// =====================================================================
+// Remio-style buttons: glass "ghost" default, bright primary. The radius
+// stays the theme's own — only fill, edge and elevation change.
+//
+// Default buttons lose the hard bottom edge and become a periwinkle wash
+// with a hairline, the way remio's `.btn-ghost` is. Filled primary buttons
+// become the pale gradient pill (`.btn-lite`) with a wide blue bloom under
+// it. Elevation is still painted on `::before` only (see _components.scss),
+// so the `:not()` chain is repeated to outrank the dark theme's glow rules.
+// =====================================================================
+$nc-elevated: ':not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push)';
+
+body.body--dark[data-theme='nocturne'] {
+  .q-btn {
+    transition:
+      transform 0.3s cubic-bezier(0.34, 1.45, 0.5, 1),
+      background-color 0.25s,
+      border-color 0.25s,
+      box-shadow 0.35s;
+  }
+
+  // Ghost: every non-filled elevated button.
+  .q-btn#{$nc-elevated}:not([class*='bg-']) {
+    border: 1.5px solid rgba(163, 177, 255, 0.32);
+    background: rgba(126, 142, 255, 0.12);
+    color: #e2e7ff;
+  }
+
+  .q-btn#{$nc-elevated}:not([class*='bg-']):before {
+    box-shadow: none;
+  }
+
+  .q-btn#{$nc-elevated}:not([class*='bg-']):hover {
+    border-color: rgba(163, 177, 255, 0.55);
+    background: rgba(126, 142, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  // Primary: pale gradient pill with a blue bloom.
+  .q-btn[class*='bg-primary'] {
+    background: linear-gradient(180deg, #ffffff, #e9edff) !important;
+    color: #1b1b4d !important;
+  }
+
+  .q-btn#{$nc-elevated}[class*='bg-primary']:before {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 -8px 18px rgba(140, 160, 255, 0.28) inset,
+      0 12px 34px -10px rgba(90, 110, 255, 0.6),
+      0 2px 6px rgba(3, 5, 28, 0.4);
+  }
+
+  .q-btn#{$nc-elevated}[class*='bg-primary']:hover:before {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 -8px 18px rgba(140, 160, 255, 0.2) inset,
+      0 18px 50px -10px rgba(110, 130, 255, 0.85),
+      0 0 0 1px rgba(255, 255, 255, 0.3);
+  }
+
+  .q-btn[class*='bg-primary']:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .q-btn:active {
+    transform: scale(0.97);
+  }
+}
+
+// =====================================================================
+// Top bar: frosted night glass with a lit lower edge.
+//
+// A flat dark strip is the one place the page gradient and the stars never
+// reach, so the bar reads as a separate slab. Here it is a translucent
+// indigo wash over a blur, with a faint periwinkle sheen across the top, a
+// glowing hairline along the bottom edge (remio's scroll-progress line,
+// drawn as a static accent) and a brand title that takes the same gradient.
+// =====================================================================
+body.body--dark[data-theme='nocturne'] {
+  .q-header {
+    background:
+      linear-gradient(180deg, rgba(126, 142, 255, 0.10), rgba(126, 142, 255, 0) 100%),
+      rgba(13, 12, 53, 0.62);
+    border-bottom: 1px solid rgba(163, 177, 255, 0.14);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+  }
+
+  // Glowing accent line on the bottom edge, fading out toward both sides.
+  .q-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(139, 157, 255, 0.85) 30%,
+      rgba(201, 212, 255, 0.95) 50%,
+      rgba(139, 157, 255, 0.85) 70%,
+      transparent 100%
+    );
+    box-shadow: 0 0 14px 1px rgba(139, 157, 255, 0.45);
+    opacity: 0.8;
+  }
+
+  .q-toolbar__title {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: linear-gradient(90deg, #ffffff 0%, #c9d4ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 0 12px rgba(139, 157, 255, 0.45));
+  }
+
+  .q-header .q-btn--flat {
+    color: #e2e7ff;
+  }
+
+  .q-header .q-btn--flat:hover {
+    background: rgba(126, 142, 255, 0.16);
+    box-shadow: 0 0 18px -4px rgba(139, 157, 255, 0.6);
+  }
+
+  .q-header .q-avatar {
+    box-shadow:
+      0 0 0 1.5px rgba(201, 212, 255, 0.55),
+      0 0 16px rgba(139, 157, 255, 0.5);
+  }
+}
+
+// =====================================================================
+// Sidebar: the same night glass as the top bar, with remio's nav-link
+// language for the rows — dim text that brightens on hover, and an active
+// state that is lit rather than just tinted.
+//
+// The drawer stops being a solid well so the starfield and the page gradient
+// run uninterrupted behind it; a gradient hairline replaces the grey seam
+// and fades out toward the corners, mirroring the glow under the top bar.
+// =====================================================================
+body.body--dark[data-theme='nocturne'] {
+  .q-drawer {
+    background:
+      linear-gradient(180deg, rgba(126, 142, 255, 0.07), rgba(126, 142, 255, 0) 40%),
+      rgba(13, 12, 53, 0.55);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-color: rgba(163, 177, 255, 0.14);
+  }
+
+  .q-drawer__content {
+    background: transparent;
+  }
+
+  // Section labels (Navigation / Workspaces)
+  .q-item__label--header {
+    color: rgba(169, 186, 255, 0.72);
+    letter-spacing: 0.16em;
+  }
+
+  .q-separator {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(163, 177, 255, 0.32),
+      transparent
+    );
+  }
+
+  // Rows
+  .q-drawer .q-item {
+    position: relative;
+    color: rgba(206, 212, 246, 0.8);
+    transition:
+      background-color 0.25s,
+      color 0.25s,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s;
+  }
+
+  .q-drawer .q-item .q-icon {
+    color: rgba(169, 186, 255, 0.7);
+    transition: color 0.25s, filter 0.3s;
+  }
+
+  // Hover is deliberately quieter than the active row: a soft wash that fades
+  // to the right and a thin accent edge on the left, no movement. The active
+  // state below uses the same shapes at full strength, so hovering reads as
+  // "about to light up" rather than as a different effect.
+  .q-drawer .q-item:hover:not(.q-router-link--active):not(.drawer-nav-item--active) {
+    background: linear-gradient(
+      90deg,
+      rgba(126, 142, 255, 0.14),
+      rgba(126, 142, 255, 0) 100%
+    );
+    color: #ffffff;
+    box-shadow: inset 2px 0 0 0 rgba(169, 186, 255, 0.45);
+  }
+
+  .q-drawer .q-item:hover:not(.q-router-link--active):not(.drawer-nav-item--active) .q-icon {
+    color: #c9d4ff;
+  }
+
+  // Active row: periwinkle wash that fades to the right, a glowing bar on the
+  // left edge, white label and a lit icon.
+  .q-drawer .q-item.q-router-link--active,
+  .q-drawer .drawer-nav-item--active {
+    background: linear-gradient(
+      90deg,
+      rgba(126, 142, 255, 0.26),
+      rgba(126, 142, 255, 0.06) 85%,
+      rgba(126, 142, 255, 0)
+    );
+    color: #ffffff;
+    box-shadow:
+      inset 3px 0 0 0 #a9baff,
+      0 0 22px -8px rgba(139, 157, 255, 0.7);
+  }
+
+  .q-drawer .q-item.q-router-link--active .q-icon,
+  .q-drawer .drawer-nav-item--active .q-icon {
+    color: #c9d4ff;
+    filter: drop-shadow(0 0 6px rgba(169, 186, 255, 0.8));
+  }
+
+  // Workspace groups: titles become small glass headers.
+  .workspace-group__title {
+    color: #ffffff;
+    letter-spacing: 0.03em;
+  }
+
+  .workspace-group__list {
+    margin-left: 10px;
+    padding-left: 6px;
+    border-left: 1px solid rgba(163, 177, 255, 0.18);
+  }
+}

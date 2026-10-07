@@ -4,6 +4,12 @@ All notable changes to `@socifi/ui-theme` are documented here. Format is loosely
 
 ## [Unreleased]
 
+### Added
+
+- Added a second dark skin, `nocturne`, activated with `data-theme="nocturne"` on `<body>` next to Quasar's `body--dark`. It re-points the semantic tokens onto a new indigo surface ramp (`--c-indigo-*`) with a periwinkle brand (`--c-periwinkle-*`) and inherits the dark theme's depth model unchanged.
+- Added the dark-only `--page-glow` token, so a skin can change the *quantity* of light the page gives off, not just its hue.
+- Nocturne now hands the page fill to a backdrop layer: the skin clears the background on `#q-app` and `.q-page` and moves it to `body`, which leaves a gap between the fill and the content for an app to paint into (the Socifi app draws its canvas starfield there, and re-applies the fill and the glow on that layer). An app that leaves the gap empty still renders the page correctly.
+
 ### Changed
 
 - Rebranded the shared Quasar theme to the violet Socifi dashboard design system, including its light and dark palettes, surfaces, typography, radii, and shadows.
@@ -24,6 +30,7 @@ All notable changes to `@socifi/ui-theme` are documented here. Format is loosely
 - Gave filled primary buttons a brand halo in dark mode and a 1px lift on hover; they previously had no hover feedback at all.
 - Removed the dark-mode `[color="primary"]` button selectors, which could never match: `QBtn` consumes the `color` prop and renders `bg-primary text-white`, whose declarations are both `!important` in Quasar's stylesheet.
 - Fixed dark-mode contrast regressions: form placeholders, navigation labels, the primary brand text used on tinted rows, and the status labels (`text-negative` and friends) all cleared WCAG AA again.
+- Lifted the page bloom, the dark shadows, the inner top highlight and the translucent borders out of hard-coded literals into tokens so a skin can re-point them; the `nocturne` skin re-points `--q-primary` too, so Quasar's `bg-primary` fills, chips and active toggle segments follow the pale brand.
 
 ## [1.0.0] - 2026-05-24
 

@@ -12,13 +12,15 @@
 //   2. _primitives    — palette → CSS custom properties
 //   3. _semantic      — semantic tokens (light/default)
 //   4. _dark          — dark-mode overrides on body.body--dark
-//   5. _components    — unlayered overrides for Quasar's unlayered CSS
-//   6. _utilities     — loaded last so utility classes can take precedence
+//   5. _theme-nocturne— optional dark *skin*, on body.body--dark[data-theme]
+//   6. _components    — unlayered overrides for Quasar's unlayered CSS
+//   7. _utilities     — loaded last so utility classes can take precedence
 // =====================================================================
 
 @forward 'palette';
 @use 'primitives';
 @use 'semantic';
 @use 'dark';
+@use 'theme-nocturne';
 @use 'components';
 @use 'utilities';

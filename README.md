@@ -4,6 +4,7 @@ Shared design system for Socifi Quasar applications. Provides:
 
 - A two-tier token system (primitives → semantic) as Sass + CSS custom properties
 - Light and dark themes (dark activated via Quasar's `body--dark` class)
+- A second dark *skin*, `nocturne` (indigo surfaces, periwinkle accent), activated with `data-theme="nocturne"`
 - Base styles for Quasar components, themed to match
 - Utility classes
 
@@ -74,6 +75,28 @@ Dark.set(true)   // or Dark.toggle()
 
 The package overrides semantic tokens on `body.body--dark`, so everything themed through tokens flips automatically.
 
+### 5. Dark skins
+
+Dark mode ships with more than one palette. The default dark theme is neutral;
+`nocturne` is a saturated indigo alternative. Both are *dark*: they share every
+dark-only depth, glass and hairline rule and differ only in the colour ramp and
+the accent, so a skin never has to re-describe elevation.
+
+Select a skin with a second attribute next to Quasar's class:
+
+```js
+import { Dark } from 'quasar'
+
+Dark.set(true)                            // Quasar owns light/dark
+document.body.dataset.theme = 'nocturne'  // the package owns the skin
+```
+
+`data-theme` is only consulted while `body--dark` is present, so a skin can
+never be applied on top of the light palette, and it stops applying the moment
+Quasar drops `body--dark`. The value is free-form: an absent or unknown one
+falls back to the base dark theme, which is what keeps the package usable by
+apps that know nothing about skins.
+
 ## Token reference
 
 ### Primitives (palette)
@@ -85,7 +108,9 @@ Available as both Sass variables (`$palette-blue-500`) and CSS variables (`--c-b
 | `blue-50` … `blue-900` | brand |
 | `gray-0` … `gray-1000` | neutral |
 | `green-500`, `amber-500`, `amber-800`, `red-500`, `cyan-500`, `purple-500` | status |
-| `ink-1000` … `ink-700` | dark-theme surface ramp — not a general neutral scale, see [Dark theme](#dark-theme) |
+| `ink-1000` … `ink-700` | neutral dark-theme surface ramp — not a general neutral scale, see [Dark theme](#dark-theme) |
+| `indigo-1000` … `indigo-700` | indigo dark surface ramp for the `nocturne` skin, see [Skins](#skins) |
+| `periwinkle-200` … `periwinkle-400` | `nocturne` brand and accent |
 
 ### Semantic tokens
 
@@ -152,8 +177,46 @@ Dark-only helper tokens, defined on `body.body--dark` and safe to override per a
 | `--shadow-float` | menus, dialogs, tooltips, notifications |
 | `--shadow-glow-primary`, `--shadow-glow-hover` | brand halo on filled primary buttons |
 | `--glass-surface`, `--glass-blur`, `--scrim` | floating-layer glass and dialog backdrop |
+| `--page-glow` | radial bloom painted behind the page content; re-pointed by skins, see [Skins](#skins) |
 
 The dark theme is deliberately asymmetric in one place: `--color-primary` is the *accent* violet (borders, focus rings, icons, labels), while filled `.bg-primary` surfaces keep Quasar's `--q-primary`. Accent violet is light enough that white text on it falls to 3.1:1, so it must never be used as a fill underneath white text.
+
+### Skins
+
+A skin re-points the semantic tokens; it never adds components. `nocturne`
+(`_theme-nocturne.scss`) is scoped to `body.body--dark[data-theme='nocturne']`,
+so it only ever layers on top of the dark theme and inherits its entire depth
+model. It changes three things, each for a reason:
+
+1. **A different ramp, the same contract.** Surfaces move from `--c-ink-*` to
+   `--c-indigo-*`. The steps keep the dark theme's spacing (≥ 3 L* apart,
+   page → card ≈ 9.7 L*) and only the hue moves, so every layering rule above
+   keeps holding without a single component rule changing.
+2. **A light accent.** `--color-primary` becomes periwinkle (`#a9baff`, L* 76.5)
+   and `--color-on-primary` flips to the darkest page colour. Periwinkle carries
+   dark ink at ~10:1, so this skin *can* do what the base dark theme cannot: use
+   its accent as a fill underneath text. `--q-primary` is re-pointed so Quasar's
+   own `bg-primary` follows, and one `!important` bridge flips `.bg-primary`
+   labels to dark ink — white on periwinkle is only 1.88:1.
+3. **More light on the page.** `--page-glow` is re-pointed to a stronger
+   periwinkle bloom plus a cool counter-bloom in the bottom corner. It is a
+   token rather than a literal inside `_components.scss` precisely so a skin can
+   change the *quantity* of light the page gives off, not just its hue.
+4. **A backdrop hand-off.** The page fill leaves the page: the skin clears the
+   background on `#q-app` and on `.q-page` and moves it to `body` (which paints
+   it as the canvas background — the only plane below a fixed layer). That
+   leaves a gap between the fill and the content for an app to paint into; the
+   Socifi app fills it with the canvas starfield in its `Starfield.vue`, which
+   is also where the fill and the glow are re-applied. The skin only guarantees
+   the gap, so an app that fills it with nothing still renders the page
+   correctly, just without the field.
+
+Everything else is inherited untouched: hairline borders, the inner top
+highlight, frosted floating layers, the dialog scrim and the inset accent bar on
+the active row. Text temperature moves with the ramp as well — Nocturne's muted
+grey is tinted toward the surface hue, because neutral grey text on an indigo
+page reads as dusty. The file records the measured WCAG ratios for text, muted
+text and brand text against all six surface steps.
 
 ### Utility classes
 
