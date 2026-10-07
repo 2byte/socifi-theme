@@ -1,0 +1,401 @@
+// =====================================================================
+// DAYLIGHT — a second light skin, opt in with `data-theme="daylight"`.
+//
+// Activation: `body.body--light` AND `data-theme="daylight"` on <body>
+// (the app's theme store writes both). It is the light counterpart of
+// Nocturne and uses the same vocabulary: a gradient page with soft blooms,
+// translucent "glass" cards with a 1.5px hairline, frosted bars, lit
+// navigation rows, ghost buttons and a glowing primary. Only the colours
+// flip — an indigo brand on a lavender-white page instead of a periwinkle
+// brand on a night one.
+//
+// Where Nocturne's brand is light and carries dark ink, Daylight's is a deep
+// indigo that carries WHITE ink: #4f5bf0 against #ffffff is 5.1:1, so
+// Quasar's own `bg-primary text-white` is already correct and nothing has to
+// be forced the way it is in the dark skin.
+//
+// Radii are left to the base theme (square), as in Nocturne.
+// =====================================================================
+
+body.body--light[data-theme='daylight'] {
+  // --- Brand: indigo ------------------------------------------------
+  --color-primary:             #4f5bf0;
+  --color-primary-hover:       #4350dc;
+  --color-primary-active:      #3a45c4;
+  --color-primary-focus:       #8ba3ff;
+  --color-primary-soft:        rgba(79, 91, 240, 0.08);
+  --color-primary-soft-strong: rgba(79, 91, 240, 0.14);
+  --color-primary-light:       rgba(79, 91, 240, 0.05);
+  --color-on-primary:          #ffffff;
+  --color-primary-text:        #4048c9;
+
+  // --- Surfaces -----------------------------------------------------
+  // Cards are glass (see the rules below), so these tokens only feed what has
+  // to stay opaque: menus, dialogs, the drawer's solid fallbacks.
+  --color-surface:             #ffffff;
+  --color-surface-base:        #f4f5ff;
+  --color-surface-raised:      #ffffff;
+  --color-surface-soft:        #f0f1ff;
+  --color-surface-soft-strong: #e6e8ff;
+  --color-header-surface:      rgba(255, 255, 255, 0.62);
+  --color-field-surface:       rgba(255, 255, 255, 0.8);
+  --color-field-border:        rgba(79, 91, 240, 0.24);
+  --color-field-text:          #14153a;
+  --color-field-placeholder:   #7a7fa8;
+  --color-field-focus:         var(--color-primary-focus);
+
+  // --- Text: ink with a blue cast -----------------------------------
+  --color-text:                #14153a;
+  --color-text-muted:          #5a5f8c;
+  --color-text-on-brand:       #ffffff;
+  --color-text-link:           #4048c9;
+
+  // --- Borders: indigo hairlines ------------------------------------
+  --color-border:              rgba(79, 91, 240, 0.16);
+  --color-border-strong:       rgba(79, 91, 240, 0.24);
+  --color-border-subtle:       rgba(79, 91, 240, 0.10);
+
+  // --- Buttons ------------------------------------------------------
+  --color-button-surface:       rgba(255, 255, 255, 0.6);
+  --color-button-surface-hover: rgba(79, 91, 240, 0.08);
+  --color-button-border:        rgba(79, 91, 240, 0.24);
+  --color-button-border-hover:  rgba(79, 91, 240, 0.5);
+  --color-button-text:          #2b2f6b;
+  --shadow-button:              none;
+  --shadow-button-primary:      0 8px 22px -8px rgba(79, 91, 240, 0.55);
+
+  // --- Navigation items ---------------------------------------------
+  --color-item-text:            #5a5f8c;
+  --color-item-hover-bg:        rgba(79, 91, 240, 0.08);
+  --color-item-hover-text:      #4048c9;
+
+  // --- Elevation ----------------------------------------------------
+  // Shadows are indigo-tinted instead of neutral: a grey shadow on a lavender
+  // page reads as dirt, a tinted one reads as light passing through glass.
+  --shadow-sm:                 0 1px 2px rgba(40, 50, 140, 0.06);
+  --shadow-md:                 0 6px 18px -8px rgba(40, 50, 140, 0.22);
+  --shadow-card-soft:          0 1px 2px rgba(40, 50, 140, 0.08);
+  --shadow-focus:              0 0 0 4px rgba(79, 91, 240, 0.16);
+
+  // --- Page ---------------------------------------------------------
+  // The same recipe as Nocturne's page — three blooms over a vertical ramp —
+  // run light. Painted on <body> (see the hand-off below) rather than a layer.
+  --page-glow:                 radial-gradient(
+                                 1000px 640px at 80% -4%,
+                                 rgba(126, 116, 255, 0.18),
+                                 transparent 62%
+                               ),
+                               radial-gradient(
+                                 760px 560px at 6% 26%,
+                                 rgba(92, 140, 255, 0.14),
+                                 transparent 62%
+                               ),
+                               radial-gradient(
+                                 900px 700px at 94% 58%,
+                                 rgba(120, 100, 255, 0.10),
+                                 transparent 60%
+                               ),
+                               linear-gradient(
+                                 180deg,
+                                 #e7e9ff 0%,
+                                 #eff0ff 16%,
+                                 #f4f5ff 40%,
+                                 #f8f9ff 70%,
+                                 #fbfbff 100%
+                               );
+}
+
+// Quasar keeps its palette in `--q-*` and does not follow `--color-primary`,
+// so the brand has to be re-pointed for `bg-primary` fills, toggles, etc.
+body.body--light[data-theme='daylight'] {
+  --q-primary: #4f5bf0;
+}
+
+// =====================================================================
+// Page hand-off: `#q-app` and `.q-page` give up their solid fill so the
+// fixed gradient on <body> shows through. `background-attachment: fixed`
+// keeps the blooms in place while the content scrolls.
+// =====================================================================
+body.body--light[data-theme='daylight'] {
+  background-color: var(--color-surface-base);
+  background-image: var(--page-glow);
+  background-attachment: fixed;
+}
+
+body.body--light[data-theme='daylight'] #q-app,
+body.body--light[data-theme='daylight'] #q-app .q-page {
+  background-color: transparent;
+  background-image: none;
+}
+
+// =====================================================================
+// Glass cards.
+// =====================================================================
+body.body--light[data-theme='daylight'] {
+  --glass-card:        rgba(255, 255, 255, 0.62);
+  --glass-card-hover:  rgba(255, 255, 255, 0.85);
+
+  .q-card:not(.q-dialog__inner > .q-card),
+  .note-card,
+  .notes-feed__card,
+  .auth-card,
+  .q-table__card,
+  .stats-card {
+    background: var(--glass-card);
+    border: 1.5px solid var(--color-border);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: var(--shadow-card-soft) !important;
+    transition: transform 0.4s cubic-bezier(0.34, 1.45, 0.5, 1),
+                border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  }
+
+  .notes-feed__card {
+    padding: 28px 26px;
+  }
+
+  .note-card:hover,
+  .notes-feed__card:hover,
+  .stats-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(79, 91, 240, 0.4);
+    background: var(--glass-card-hover);
+    box-shadow: 0 2px 4px rgba(40, 50, 140, 0.12) !important;
+  }
+
+  .notes-feed__tag {
+    background: rgba(79, 91, 240, 0.10);
+    color: var(--color-primary-text);
+  }
+
+  .notes-feed__skeleton {
+    background: var(--glass-card);
+  }
+}
+
+// =====================================================================
+// Buttons: classic. Flat fills, a hairline edge and a tight, short shadow
+// that barely falls off the button (1px offset, 2px blur) — no glow, no
+// bloom, no movement. Hover only deepens the colour and adds one more pixel
+// of shadow; pressing removes it.
+// =====================================================================
+$dl-elevated: ':not(.q-btn--flat):not(.q-btn--outline):not(.q-btn--unelevated):not(.q-btn--push)';
+
+body.body--light[data-theme='daylight'] {
+  .q-btn {
+    transition:
+      background-color 0.15s,
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+
+  // Default: white surface, indigo hairline.
+  .q-btn#{$dl-elevated}:not([class*='bg-']) {
+    border: 1px solid rgba(79, 91, 240, 0.28);
+    background: #ffffff;
+    color: #2b2f6b;
+  }
+
+  .q-btn#{$dl-elevated}:not([class*='bg-']):before {
+    box-shadow: 0 1px 2px rgba(40, 50, 140, 0.14);
+  }
+
+  // Hover keeps the white fill: the edge and the label pick up the brand
+  // instead. Quasar's own hover overlay (`.q-focus-helper`, currentColor at
+  // ~15%) is switched off for these buttons — stacked on a white fill it
+  // turned the button a muddy grey-blue.
+  .q-btn#{$dl-elevated}:not([class*='bg-']):hover {
+    border-color: #4f5bf0;
+    color: #4048c9;
+  }
+
+  .q-btn#{$dl-elevated}:not([class*='bg-']):hover .q-focus-helper {
+    opacity: 0 !important;
+  }
+
+  .q-btn#{$dl-elevated}:not([class*='bg-']):hover:before {
+    box-shadow: 0 2px 3px rgba(40, 50, 140, 0.16);
+  }
+
+  // Primary: solid indigo.
+  .q-btn[class*='bg-primary'] {
+    background: #4f5bf0 !important;
+  }
+
+  .q-btn[class*='bg-primary']:hover {
+    background: #4350dc !important;
+  }
+
+  .q-btn#{$dl-elevated}[class*='bg-primary']:before {
+    box-shadow: 0 1px 2px rgba(40, 50, 140, 0.35);
+  }
+
+  .q-btn#{$dl-elevated}[class*='bg-primary']:hover:before {
+    box-shadow: 0 2px 3px rgba(40, 50, 140, 0.4);
+  }
+
+  .q-btn#{$dl-elevated}:active:before {
+    box-shadow: none;
+  }
+}
+
+// =====================================================================
+// Top bar: frosted day glass with a lit lower edge.
+// =====================================================================
+body.body--light[data-theme='daylight'] {
+  .q-header {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%),
+      rgba(244, 245, 255, 0.62);
+    border-bottom: 1px solid rgba(79, 91, 240, 0.12);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+  }
+
+  .q-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(99, 112, 255, 0.75) 30%,
+      rgba(150, 120, 255, 0.85) 50%,
+      rgba(99, 112, 255, 0.75) 70%,
+      transparent 100%
+    );
+    box-shadow: 0 0 12px 1px rgba(99, 112, 255, 0.3);
+    opacity: 0.8;
+  }
+
+  .q-toolbar__title {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: linear-gradient(90deg, #14153a 0%, #4f5bf0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .q-header .q-btn--flat {
+    color: #2b2f6b;
+  }
+
+  .q-header .q-btn--flat:hover {
+    background: rgba(79, 91, 240, 0.1);
+    box-shadow: 0 0 16px -4px rgba(79, 91, 240, 0.35);
+  }
+
+  .q-header .q-avatar {
+    box-shadow:
+      0 0 0 1.5px rgba(255, 255, 255, 0.9),
+      0 0 14px rgba(79, 91, 240, 0.4);
+  }
+}
+
+// =====================================================================
+// Sidebar: near-opaque white so the rows have something to read against —
+// the translucent version let the lavender page wash everything out.
+// =====================================================================
+body.body--light[data-theme='daylight'] {
+  .q-drawer {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.94),
+      rgba(247, 248, 255, 0.9)
+    );
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    border-color: rgba(79, 91, 240, 0.2);
+    box-shadow: 4px 0 24px -12px rgba(40, 50, 140, 0.25);
+  }
+
+  .q-drawer__content {
+    background: transparent;
+  }
+
+  .q-item__label--header {
+    color: #4048c9;
+    letter-spacing: 0.16em;
+  }
+
+  .q-separator {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(79, 91, 240, 0.35),
+      transparent
+    );
+  }
+
+  // Rows: a quiet label next to an icon tile. The tile is what carries the
+  // state — tinted at rest, deeper on hover, solid indigo when active — so the
+  // row itself needs no bars or gradients.
+  .q-drawer .q-item {
+    position: relative;
+    margin: 2px 10px;
+    padding: 6px 8px;
+    min-height: 44px;
+    border: 1px solid transparent;
+    color: #343a78;
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      box-shadow 0.2s,
+      color 0.2s;
+  }
+
+  .q-drawer .q-item__section--avatar .q-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    color: #4f5bf0;
+    background: rgba(79, 91, 240, 0.09);
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .q-drawer .q-item:hover:not(.q-router-link--active):not(.drawer-nav-item--active) {
+    background: rgba(79, 91, 240, 0.06);
+    color: #14153a;
+  }
+
+  .q-drawer .q-item:hover:not(.q-router-link--active):not(.drawer-nav-item--active)
+    .q-item__section--avatar .q-icon {
+    background: rgba(79, 91, 240, 0.18);
+  }
+
+  // Active: a white card with a hairline and the smallest shadow, and the
+  // icon tile filled with the brand.
+  .q-drawer .q-item.q-router-link--active,
+  .q-drawer .drawer-nav-item--active {
+    background: #ffffff;
+    border-color: rgba(79, 91, 240, 0.22);
+    color: #14153a;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(40, 50, 140, 0.1);
+  }
+
+  .q-drawer .q-item.q-router-link--active .q-item__section--avatar .q-icon,
+  .q-drawer .drawer-nav-item--active .q-item__section--avatar .q-icon {
+    background: #4f5bf0;
+    color: #ffffff;
+  }
+
+  .workspace-group__title {
+    color: #14153a;
+    letter-spacing: 0.03em;
+  }
+
+  .workspace-group__list {
+    margin-left: 10px;
+    padding-left: 6px;
+    border-left: 1px solid rgba(79, 91, 240, 0.3);
+  }
+}
